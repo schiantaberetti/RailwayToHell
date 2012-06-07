@@ -229,7 +229,7 @@ Class Semaphore is
     WAITING_AGREE -> COMMANDED_GREEN { agree(sender, dest, route) / requested_route := route; }
     WAITING_AGREE -> ABORTING { aborting(sender, dest, route) / next[route].aborting(self, next[route], route); }
 
-    COMMANDED_GREEN -> Top.GREEN { - / reversed := not reversed; prev[requested_route].agree(self, prev[requested_route], requested_route); color_red := False; }
+    COMMANDED_GREEN -> Top.GREEN { - / prev[requested_route].agree(self, prev[requested_route], requested_route); color_red := False; }
     COMMANDED_GREEN -> RED  { - / prev[requested_route].disagree(self, prev[requested_route], requested_route); next[requested_route].disagree(self, next[requested_route], requested_route); }
     COMMANDED_GREEN -> COMMANDED_GREEN { req(sender, dest, route) / sender.nack(self, sender, route); }
     COMMANDED_GREEN -> ABORTING { aborting(sender, dest, route) / next[route].aborting(self, next[route], route); }
