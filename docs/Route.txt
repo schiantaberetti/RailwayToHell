@@ -1,0 +1,18 @@
+0. firenze, switchFi1, switchFi2, prato
+1. prato, switchBo2, switchBo1, bologna
+2. firenze, switchFi1, switchFi2, prato, switchBo2, switchBo1, bologna
+3. firenze, switchFi1, switchFi2, porretta
+4. porretta, switchBo2, switchBo1, bologna
+5. firenze, switchFi1, switchFi2, porretta, switchBo2, switchBo1, bologna
+6. prato, switchFi2, switchFi1, firenze
+7. bologna, switchBo1, switchBo2, prato
+8. bologna, switchBo1, switchBo2, prato, switchFi2, switchFi1, firenze
+9. porretta, switchFi2, switchFi1, firenze
+10. bologna, switchBo1, switchBo2, porretta
+11. bologna, switchBo1, switchBo2, porretta, switchFi2, switchFi1, firenze
+12. firenze, switchFi1, pisa
+13. firenze, switchFi1, pisa, switchBo1, bologna
+14. bologna, switchBo1, pisa, switchFi1, firenze
+15. bologna, switchBo1, pisa
+16. pisa, switchBo1, bologna
+17. pisa, switchFi1, firenze

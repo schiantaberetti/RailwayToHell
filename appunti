@@ -1,0 +1,11 @@
+next e prev sono una matrice di adiacenza distribuita
+
+TODO:
+- ficcare matrice globale
+- ficcare il nostro tracciato
+- modellare semaphore
+- bere
+
+Route 8: GA4 - F - W2 - W3 - GA3
+Route 14: GA3 - N2 - W3 - W2 - GA4
+Route 9: GA4 - F - W2 - W3 - GA3 - P2 - W1 - GA1
