@@ -37,30 +37,32 @@ class TrackElement
 		@name
 	end
 	
-	def print_el_list(lista)
+	def self.print_el_list(lista)
+		count=0
 		lista.each do |el|
 			if el
-				print "#{el.get_name}"
+				print "#{el}"
 			else
 				print "null"
 			end
-			if lista.find_index(el)<lista.length-1
+			if count<lista.length-1
 				print ","
 			end
+			count+=1
 		end
 	end
 	
 	def print_element()
-		p "#{@name}: #{element_type} ("
+		puts "#{@name}: #{element_type} ("
 		
 		print "\tprev => ["
-		print_el_list(prev_element_list)
+		TrackElement.print_el_list(prev_element_list)
 		print "]"
 		
 		puts
 		
 		print "\tnext => ["
-		print_el_list(next_element_list)
+		TrackElement.print_el_list(next_element_list)
 		print "]"
 		
 		puts ");"
@@ -111,16 +113,41 @@ def get_elements(routes)
 
 end
 
+def print_train_obj(name,routes,routes_indexes)
+	starting_node=routes[routes_indexes[0]][0]
+	nodes=[]
+	train_stops=[]
+	routes.each do |route|
+		if routes_indexes.include? routes.find_index(route)
+			nodes=nodes.concat(route)
+			train_stops.push route.last
+		end
+	end
+	aborting_list=[]
+	nodes.each do |node|
+		aborting_list.push "False"
+	end
+	
+	print "#{name}: Train (\n"
+	print "\troutes => [";	TrackElement.print_el_list(routes_indexes);	print "]\n"
+	print "\tnodes => [";	TrackElement.print_el_list(nodes);	print "]\n" #{nodes},\n"
+	print "\taborting => [";	TrackElement.print_el_list(aborting_list);	print "]\n"#{aborting_list},\n"
+	print "\tstops => [";	TrackElement.print_el_list(train_stops);	print "]\n"#{train_stops},\n"
+	print "\tnode => #{starting_node}\n"
+	print ");\n"
+
+end
 
 
 routes=[['GA1','N1','GA3'],
 		['GA1','GA3'],
 		['GA3','N1','GA1']]
 elements=get_elements(routes)
-
-
 init_track_elements(elements,routes)
+
 
 elements.each do |trackEl|
 	trackEl.print_element
 end
+puts ""
+print_train_obj("meucci",routes,[0,2])
