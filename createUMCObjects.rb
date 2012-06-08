@@ -1,4 +1,23 @@
 #!~/.rvm/bin/ruby
+class Array
+	def to_s
+		string=""
+		count=0
+		self.each do |el|
+			if el
+				string.concat el.to_s
+			else
+				string.concat "null"
+			end
+			if count<self.length-1
+				string.concat ","
+			end
+			count+=1
+		end
+		string
+	end
+end
+
 class TrackElement
 
 	attr_accessor :element_type
@@ -37,32 +56,19 @@ class TrackElement
 		@name
 	end
 	
-	def self.print_el_list(lista)
-		count=0
-		lista.each do |el|
-			if el
-				print "#{el}"
-			else
-				print "null"
-			end
-			if count<lista.length-1
-				print ","
-			end
-			count+=1
-		end
-	end
+
 	
 	def print_element()
 		puts "#{@name}: #{element_type} ("
 		
 		print "\tprev => ["
-		TrackElement.print_el_list(prev_element_list)
+		print prev_element_list
 		print "]"
 		
 		puts
 		
 		print "\tnext => ["
-		TrackElement.print_el_list(next_element_list)
+		print next_element_list
 		print "]"
 		
 		puts ");"
@@ -119,6 +125,9 @@ def print_train_obj(name,routes,routes_indexes)
 	train_stops=[]
 	routes.each do |route|
 		if routes_indexes.include? routes.find_index(route)
+			if nodes.last==route.first
+				route=route[1..route.length-1]
+			end
 			nodes=nodes.concat(route)
 			train_stops.push route.last
 		end
@@ -129,10 +138,10 @@ def print_train_obj(name,routes,routes_indexes)
 	end
 	
 	print "#{name}: Train (\n"
-	print "\troutes => [";	TrackElement.print_el_list(routes_indexes);	print "]\n"
-	print "\tnodes => [";	TrackElement.print_el_list(nodes);	print "]\n" #{nodes},\n"
-	print "\taborting => [";	TrackElement.print_el_list(aborting_list);	print "]\n"#{aborting_list},\n"
-	print "\tstops => [";	TrackElement.print_el_list(train_stops);	print "]\n"#{train_stops},\n"
+	print "\troutes => [ #{routes_indexes }]\n"
+	print "\tnodes => [ #{nodes}],\n"
+	print "\taborting => [#{aborting_list}],\n"
+	print "\tstops => [#{train_stops}],\n"
 	print "\tnode => #{starting_node}\n"
 	print ");\n"
 
