@@ -147,10 +147,27 @@ def print_train_obj(name,routes,routes_indexes)
 
 end
 
-
+=begin
 routes=[['GA1','N1','GA3'],
 		['GA1','GA3'],
 		['GA3','N1','GA1']]
+=end
+filename=""
+if ARGV.length>0
+	filename=ARGV[0]
+end
+if filename==""
+	print "[Error] Route File Required.\n"
+	exit 1
+end
+
+routes=[]
+open('MyRoutes.txt').each do |line|
+	route=line.split(' ')
+	routes.push route
+end
+p routes
+
 elements=get_elements(routes)
 init_track_elements(elements,routes)
 
