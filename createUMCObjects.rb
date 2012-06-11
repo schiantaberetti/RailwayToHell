@@ -166,7 +166,6 @@ open(filename).each do |line|
 	route=line.split(' ')
 	routes.push route
 end
-p routes
 
 elements=get_elements(routes)
 init_track_elements(elements,routes)
