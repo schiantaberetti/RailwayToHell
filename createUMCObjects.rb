@@ -162,7 +162,7 @@ if filename==""
 end
 
 routes=[]
-open('MyRoutes.txt').each do |line|
+open(filename).each do |line|
 	route=line.split(' ')
 	routes.push route
 end
