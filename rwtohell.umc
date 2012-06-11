@@ -13,21 +13,23 @@ Class Train is
     node: obj;
     aborting: bool[];
 
-  State Top = READY, WAITING_OK, MOVING, ARRIVED, STOPPED, ABORTING
+  State Top = READY, WAITING_OK, MOVING, ARRIVED, STOPPED, ABORTING, CANCELLED
 
   Transitions:
     READY -> WAITING_OK { - / nodes[position].req(self, nodes[position], routes[route_pos]); }
 
-    WAITING_OK -> READY { wait }  
+    WAITING_OK -> CANCELLED { wait }  
     WAITING_OK -> MOVING { start }
     WAITING_OK -> ABORTING { - [aborting[position] = True] / nodes[position].aborting(self, nodes[position], routes[route_pos]); }
     
+    CANCELLED -> READY
+
     MOVING -> ABORTING { - [aborting[position] = True and position < nodes.length - 1 and stops[stop_pos] /= nodes[position]] / nodes[position].aborting(self, nodes[position], routes[route_pos]); }
     
     MOVING -> MOVING { - [aborting[position] = False and position < nodes.length - 1 and stops[stop_pos] /= nodes[position]] /                    
-                   node := null; --perché queste azioni non sono atomiche!!!!
-                   -- sempre perché non sono operazioni atomiche
-                   -- il treno si trova per un istante su due nodi così da
+                   node := null; --perch%E9 queste azioni non sono atomiche!!!!
+                   -- sempre perch%E9 non sono operazioni atomiche
+                   -- il treno si trova per un istante su due nodi cos%EC da
                    -- evitare una doppia prenotazione. Quindi si setta prima su ON il nuovo
                    -- nodo e poi su OFF il nodo che viene lasciato.
                    nodes[position + 1].sensorOn(self, nodes[position + 1], routes[route_pos]);
@@ -207,9 +209,9 @@ Class Semaphore is
     prev: obj[];             
     train: obj := null;      
     requested_route: int;
-    color_red: bool := True ;	         
+    color_red: bool := True ;          
 
-  State Top = RED, WAITING_ACK, WAITING_COMMIT, WAITING_AGREE, COMMANDED_RED, COMMANDED_GREEN, TRAIN_PASSING, GREEN, ABORTING
+  State Top = RED, WAITING_ACK, WAITING_COMMIT, WAITING_AGREE, COMMANDED_RED, COMMANDED_GREEN, TRAIN_PASSING, GREEN, ABORTING, FAILED
   State WAITING_ACK Defers req(sender: obj, dest: obj, route: int)
 
   Transitions:
@@ -241,10 +243,13 @@ Class Semaphore is
     TRAIN_PASSING -> COMMANDED_RED { sensorOff(sender,dest,route) / train := null; }
     TRAIN_PASSING -> TRAIN_PASSING { req(sender, dest, route) / sender.nack(self, sender, route); }
     TRAIN_PASSING -> TRAIN_PASSING { aborting(sender, dest, route) [train /= null and sender = train] / train.retry; }
-	
+ 
     COMMANDED_RED -> COMMANDED_RED { req(sender, dest, route) / sender.nack(self, sender, route); }
-    COMMANDED_RED -> COMMANDED_RED	
+    COMMANDED_RED -> FAILED
     COMMANDED_RED -> RED {- / color_red := True;}
+    
+    FAILED -> FAILED { req(sender, dest, route) / sender.nack(self, sender, route); }
+    FAILED -> RED {- / color_red := True;}
 
     ABORTING -> RED { cancel(sender, dest, route) / prev[route].cancel(self, prev[route], route); }
 
@@ -255,106 +260,97 @@ end Semaphore
 
 Objects
 
-  firenze: TrackCircuit (
-    prev => [null, null, null, null, null, null, switchFi1, null, switchFi1, switchFi1, null, switchFi1, null, null, switchFi1, null, null, switchFi1],
-    next => [switchFi1, null, switchFi1, switchFi1, null, switchFi1, null, null, null, null, null, null, switchFi1, switchFi1, null, null, null, null],
-    train => meucci, 
-    outer_station => True);
+GA1: TrackCircuit (
+ train => locomotive, 
+    outer_station => True,
+ prev => [null,null,null,null,null,null,W1,null,W1,null,W1,null,W1,null,null],
+ next => [A,A,A,A,A,null,null,null,null,null,null,null,null,null,null]);
+A: Semaphore (
+    train => null,
+ prev => [GA1,GA1,GA1,GA1,GA1,null,null,null,null,null,null,null,null,null,null],
+ next => [W1,W1,W1,W1,W1,null,null,null,null,null,null,null,null,null,null]);
+W1: Switch (
+ conf => [False, False, False, False, False, False, False, False, False, False, False, False, False, True, True],
+    train => null,
+ prev => [A,A,A,A,A,null,P1,null,P2,null,P1,null,P2,null,null],
+ next => [GA2,GA2,GA3,GA3,GA3,null,GA1,null,GA1,null,GA1,null,GA1,null,null]);
+GA2: TrackCircuit (
+ train => null, 
+    outer_station => False,
+ prev => [W1,W1,null,null,null,W2,W2,null,null,null,null,null,null,null,null],
+ next => [null,N1,null,null,null,null,P1,null,null,null,P1,N1,null,null,null]);
+N1: Semaphore (
+    train => null,
+ prev => [null,GA2,null,null,null,null,null,null,null,null,null,GA2,null,null,null],
+ next => [null,W2,null,null,null,null,null,null,null,null,null,W2,null,null,null]);
+W2: Switch (
+ conf => [False, False, False, False, False, False, False, False, False, False, False, False, False, True, True],
+ prev => [null,N1,null,W3,null,F,F,F,F,null,null,N1,null,W3,null],
+ next => [null,GA4,null,GA4,null,GA2,GA2,W3,W3,null,null,GA4,null,GA4,null]);
+GA4: TrackCircuit (
+ train => null, 
+    outer_station => True,
+ prev => [null,W2,null,W2,null,null,null,null,null,null,null,W2,null,W2,null],
+ next => [null,null,null,null,null,F,F,F,F,null,null,null,null,null,null]);
+GA3: TrackCircuit (
+ train => null, 
+    outer_station => False,
+ prev => [null,null,W1,W1,W1,null,null,W3,W3,W3,null,null,null,null,null],
+ next => [null,null,null,N2,N2,null,null,null,P2,null,null,null,P2,N2,N2]);
+N2: Semaphore (
+    train => null,
+ prev => [null,null,null,GA3,GA3,null,null,null,null,null,null,null,null,GA3,GA3],
+ next => [null,null,null,W3,W3,null,null,null,null,null,null,null,null,W3,W3]);
+W3: Switch (
+ conf => [False, False, False, False, False, False, False, False, False, False, False, False, False, True, True],
+ prev => [null,null,null,N2,N2,null,null,W2,W2,S10,null,null,null,N2,N2],
+ next => [null,null,null,W2,GA5,null,null,GA3,GA3,GA3,null,null,null,W2,GA5]);
+GA5: TrackCircuit (
+ train => null, 
+    outer_station => False,
+ prev => [null,null,null,null,W3,null,null,null,null,null,null,null,null,null,W3],
+ next => [null,null,null,null,null,null,null,null,null,S10,null,null,null,null,null]);
+F: Semaphore (
+    train => null,
+ prev => [null,null,null,null,null,GA4,GA4,GA4,GA4,null,null,null,null,null,null],
+ next => [null,null,null,null,null,W2,W2,W2,W2,null,null,null,null,null,null]);
+P1: Semaphore (
+    train => null,
+ prev => [null,null,null,null,null,null,GA2,null,null,null,GA2,null,null,null,null],
+ next => [null,null,null,null,null,null,W1,null,null,null,W1,null,null,null,null]);
+P2: Semaphore (
+    train => null,
+ prev => [null,null,null,null,null,null,null,null,GA3,null,null,null,GA3,null,null],
+ next => [null,null,null,null,null,null,null,null,W1,null,null,null,W1,null,null]);
+S10: Semaphore (
+    train => null,
+ prev => [null,null,null,null,null,null,null,null,null,GA5,null,null,null,null,null],
+ next => [null,null,null,null,null,null,null,null,null,W3,null,null,null,null,null]);
 
-  switchFi1: Switch (
-    prev => [firenze, null, firenze, firenze, null, firenze, switchFi2, null, switchFi2, switchFi2, null, switchFi2, firenze, firenze, pisa, null, null, pisa],
-    next => [switchFi2, null, switchFi2, switchFi2, null, switchFi2, firenze, null, firenze, firenze, null, firenze, pisa, pisa, firenze, null, null, firenze],
-    conf => [False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, False, False, True],
-    train => null);
+locomotive: Train (
+ routes => [ 1],
+ nodes => [ GA1,A,W1,GA2,N1,W2,GA4],
+ aborting => [False,False,False,False,False,False,False],
+ stops => [GA4],
+ node => GA1
+);
 
-  switchFi2: Switch (
-    prev => [switchFi1, null, switchFi1, switchFi1, null, switchFi1, prato, null, prato, porretta, null, porretta, null, null, null, null, null, null],
-    next => [prato, null, prato, porretta, null, porretta, switchFi1, null, switchFi1, switchFi1, null, switchFi1, null, null, null, null, null, null],
-    conf => [False, False, False, True, False, True, False, False, False, True, False, True, False, False, False, False, False, False],
-    train => null);
-
-  porretta: TrackCircuit (
-    prev => [null, null, null, switchFi2, null, switchFi2, null, null, null, null, switchBo2, switchBo2, null, null, null, null, null, null],
-    next => [null, null, null, null, switchBo2, switchBo2, null, null, null, switchFi2, null, switchFi2, null, null, null, null, null, null],
-    train => marconi, 
-    outer_station => False);
-
-  prato: TrackCircuit (
-    prev => [switchFi2, null, switchFi2, null, null, null, null, switchBo2, switchBo2, null, null, null, null, null, null, null, null, null],
-    next => [null, switchBo2, switchBo2, null, null, null, switchFi2, null, switchFi2, null, null, null, null, null, null, null, null, null],
-    train => null, 
-    outer_station => False);
-
-  switchBo2: Switch (
-    prev => [null, prato, prato, null, porretta, porretta, null, switchBo1, switchBo1, null, switchBo1, switchBo1, null, null, null, null, null, null],
-    next => [null, switchBo1, switchBo1, null, switchBo1, switchBo1, null, prato, prato, null, porretta, porretta, null, null, null, null, null, null],
-    conf => [False, False, False, False, True, True, False, False, False, False, True, True, False, False, False, False, False, False],
-    train => null);
-
-  switchBo1: Switch (
-    prev => [null, switchBo2, switchBo2, null, switchBo2, switchBo2, null, bologna, bologna, null, bologna, bologna, null, pisa, bologna, bologna, pisa, null],
-    next => [null, bologna, bologna, null, bologna, bologna, null, switchBo2, switchBo2, null, switchBo2, switchBo2, null, bologna, pisa, pisa, bologna, null],
-    conf => [False, False, False, False, False, False, False, False, False, False, False, False, False, True, True, True, True, False],
-    train => null);
-
-  bologna: TrackCircuit (
-    prev => [null, switchBo1, switchBo1, null, switchBo1, switchBo1, null, null, null, null, null, null, null, switchBo1, null, null, switchBo1, null],
-    next => [null, null, null, null, null, null, null, switchBo1, switchBo1, null, switchBo1, switchBo1, null, null, switchBo1, switchBo1, null, null],
-    train => null, 
-    outer_station => True);
-    
-  pisa: TrackCircuit (
-    prev => [null, null, null, null, null, null, null, null, null, null, null, null, switchFi1, switchFi1, switchBo1, switchBo1, null, null],
-    next => [null, null, null, null, null, null, null, null, null, null, null, null, null, switchBo1, switchFi1, null, switchBo1, switchFi1],
-    train => null, 
-    outer_station => False);
-
-  
-  meucci: Train (
-    routes => [2,11,12,16],
-    nodes => [firenze, switchFi1, switchFi2, prato, switchBo2, switchBo1, bologna, switchBo1, switchBo2, porretta, switchFi2, switchFi1, firenze, switchFi1, pisa, switchBo1, bologna],
-    aborting => [False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False],
-    stops => [bologna, firenze, pisa, bologna],
-    node => firenze
-  );
-  
-
-  marconi: Train (
-    routes => [9,0,6,13],
-    nodes => [porretta, switchFi2, switchFi1, firenze, switchFi1, switchFi2, prato, switchFi2, switchFi1, firenze, switchFi1, pisa, switchBo1, bologna],
-    aborting => [False, True, False, False, False, False, False, False, False, False, False, False, False, False],
-    stops => [firenze, prato, firenze, bologna],
-    node => porretta
-  );
-
-
-/*  meucci:  Train (
-    routes => [2],
-    nodes => [firenze, switchFi2, prato, switchBo2, bologna],
-    aborting => [False, False, True, False, False],
-    stops => [bologna],
-    node => firenze
-  );
-  
-
-  marconi: Train (
-    routes => [9],
-    nodes => [porretta, switchFi2, firenze],
-    aborting => [False, True, False],
-    stops => [firenze],
-    node => porretta
-  );*/
-  
 
 Abstractions {
   Action $1($*) -> $1($*)
 
-  State inState(meucci.ARRIVED) -> meucci_arrived
-  State inState(marconi.ARRIVED) -> marconi_arrived
+  State inState(locomotive.ARRIVED) -> locomotive_arrived
 
-  State inState(meucci.ABORTING) -> meucci_aborting
-  State inState(marconi.ABORTING) -> marconi_aborting
+  State inState(locomotive.STOPPED) -> locomotive_stopped
 
+  State inState(locomotive.CANCELLED) -> locomotive_cancelled
+
+  State inState(locomotive.ABORTING) -> locomotive_aborting
+
+  State inState(locomotive.MOVING) -> locomotive_moving
+
+  State inState(locomotive.WAITING_OK) -> locomotive_request
+/*
   State meucci.node = marconi.node and meucci.node /= null -> crash
   
   State meucci.node = firenze -> meucci_in_firenze
@@ -373,6 +369,7 @@ Abstractions {
   State meucci.node = switchBo2 -> meucci_on_switchBo2
   State marconi.node = switchFi2 -> marconi_on_switchFi2
   State marconi.node = switchBo2 -> marconi_on_switchBo2
+*/
 }
 
 /* --------- formule -----------------
@@ -383,4 +380,19 @@ Abstractions {
  *
  * EF AG (marconi_arrived and meucci_arrived)
  *
+  AG (locomotive_request implies AF (locomotive_arrived or locomotive_cancelled)) 
  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -63,7 +63,7 @@ class TrackElement
 		
 		print "\tprev => ["
 		print prev_element_list
-		print "]"
+		print "],"
 		
 		puts
 		
@@ -138,7 +138,7 @@ def print_train_obj(name,routes,routes_indexes)
 	end
 	
 	print "#{name}: Train (\n"
-	print "\troutes => [ #{routes_indexes }]\n"
+	print "\troutes => [ #{routes_indexes }],\n"
 	print "\tnodes => [ #{nodes}],\n"
 	print "\taborting => [#{aborting_list}],\n"
 	print "\tstops => [#{train_stops}],\n"
@@ -175,4 +175,4 @@ elements.each do |trackEl|
 	trackEl.print_element
 end
 puts ""
-print_train_obj("meucci",routes,[0,2])
+print_train_obj("locomotive",routes,[1])
