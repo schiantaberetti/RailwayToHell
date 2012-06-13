@@ -123,15 +123,20 @@ def print_train_obj(name,routes,routes_indexes)
 	starting_node=routes[routes_indexes[0]][0]
 	nodes=[]
 	train_stops=[]
-	routes.each do |route|
-		if routes_indexes.include? routes.find_index(route)
-			if nodes.last==route.first
-				route=route[1..route.length-1]
-			end
-			nodes=nodes.concat(route)
-			train_stops.push route.last
+	tmp_route=[]
+	routes_indexes.each do |route_index|
+		route=routes[route_index]
+		if nodes.last==route.first
+			tmp_route=route[1..route.length-1]
+		else
+			tmp_route=route
 		end
+		nodes=nodes.concat(tmp_route)
+		train_stops.push tmp_route.last
 	end
+	
+
+
 	aborting_list=[]
 	nodes.each do |node|
 		aborting_list.push "False"
@@ -175,4 +180,4 @@ elements.each do |trackEl|
 	trackEl.print_element
 end
 puts ""
-print_train_obj("locomotive",routes,[1])
+print_train_obj("locomotive",routes,[1,8,3])

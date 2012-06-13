@@ -328,11 +328,11 @@ S10: Semaphore (
  next => [null,null,null,null,null,null,null,null,null,W3,null,null,null,null,null]);
 
 locomotive: Train (
- routes => [ 1],
- nodes => [ GA1,A,W1,GA2,N1,W2,GA4],
- aborting => [False,False,False,False,False,False,False],
- stops => [GA4],
- node => GA1
+	routes => [ 1,8,3],
+	nodes => [ GA1,A,W1,GA2,N1,W2,GA4,F,W2,W3,GA3,P2,W1,GA1,A,W1,GA3,N2,W3,W2,GA4],
+	aborting => [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False],
+	stops => [GA4,GA1,GA4],
+	node => GA1
 );
 
 
