@@ -261,7 +261,7 @@ end Semaphore
 Objects
 
 GA1: TrackCircuit (
- train => locomotive, 
+ train => null, 
     outer_station => True,
  prev => [null,null,null,null,null,null,W1,null,W1,null,W1,null,W1,null,null],
  next => [A,A,A,A,A,null,null,null,null,null,null,null,null,null,null]);
@@ -293,7 +293,7 @@ GA4: TrackCircuit (
  prev => [null,W2,null,W2,null,null,null,null,null,null,null,W2,null,W2,null],
  next => [null,null,null,null,null,F,F,F,F,null,null,null,null,null,null]);
 GA3: TrackCircuit (
- train => null, 
+ train => locomotive, 
     outer_station => False,
  prev => [null,null,W1,W1,W1,null,null,W3,W3,W3,null,null,null,null,null],
  next => [null,null,null,N2,N2,null,null,null,P2,null,null,null,P2,N2,N2]);
@@ -327,12 +327,13 @@ S10: Semaphore (
  prev => [null,null,null,null,null,null,null,null,null,GA5,null,null,null,null,null],
  next => [null,null,null,null,null,null,null,null,null,W3,null,null,null,null,null]);
 
+
 locomotive: Train (
-	routes => [ 1,8,3],
-	nodes => [ GA1,A,W1,GA2,N1,W2,GA4,F,W2,W3,GA3,P2,W1,GA1,A,W1,GA3,N2,W3,W2,GA4],
-	aborting => [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False],
-	stops => [GA4,GA1,GA4],
-	node => GA1
+	routes => [ 14],
+	nodes => [ GA3,N2,W3,GA5],
+	aborting => [False,False,False,False],
+	stops => [GA5],
+	node => GA3
 );
 
 

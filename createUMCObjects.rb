@@ -180,4 +180,4 @@ elements.each do |trackEl|
 	trackEl.print_element
 end
 puts ""
-print_train_obj("locomotive",routes,[1,8,3])
+print_train_obj("locomotive",routes,[14])
