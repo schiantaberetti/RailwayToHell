@@ -129,7 +129,13 @@ def print_train_obj(name,routes,routes_indexes)
 		if nodes.last==route.first
 			tmp_route=route[1..route.length-1]
 		else
-			tmp_route=route
+			if nodes.empty?
+				tmp_route=route
+			else
+				print "Noncormant Input Routes :(\n"
+				exit 1
+				tmp_route=route
+			end
 		end
 		nodes=nodes.concat(tmp_route)
 		train_stops.push tmp_route.last
@@ -180,4 +186,8 @@ elements.each do |trackEl|
 	trackEl.print_element
 end
 puts ""
-print_train_obj("locomotive",routes,[14])
+=begin
+print_train_obj("locomotive",routes,[1,6,3,8,0,10,2,12,4,9,13,5,11,7,14])
+=end
+print_train_obj("locomotive",routes,[1])
+print_train_obj("mosca",routes,[9,12])
