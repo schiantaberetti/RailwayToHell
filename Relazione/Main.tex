@@ -4,6 +4,12 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{listings}
+
+\lstset{basicstyle=\small\ttfamily, frame=lines,
+emph={obj,int,bool,State, Top,Transitions,Class,is,True,False,null,Vars,Signals},
+emphstyle=\bfseries
+}
 \usepackage{graphicx}
 \author{Luca Baldesi, Luca Melis, Simone Macaluso}
 \title{Modellazione di un sistema di
@@ -71,13 +77,59 @@ Per poter fare ciò, i circuiti di binario esterni possono, tramite il comando `
 
 \chapter{Safety e Stabilizzazione}
 %Descrizione delle proprietà da garantire
+Il sistema di interlocking distribuito da noi realizzato soddisfa la proprietà della \emph{stabilizzazione}.\\
+La proprietà di \emph{stabilizzazione} può essere così enunciata:
+per ogni richiesta di itinerario compiuta da un treno posto al punto di inizio dell’itinerario, esiste una computazione che porta il treno al punto di fine dell’itinerario, e tutte le computazioni alternative (per effetto di guasti o altri motivi) producono un \emph{abort} della richiesta.\\
+\\
+In \emph{Computation Tree Logic (CTL)} questa proprietà viene descritta come:\\
+\begin{lstlisting}
+AG (locomotive_request implies AF (locomotive_arrived or locomotive_cancelled)) 
+\end{lstlisting} 
+\\
+In particolare:
+\begin{itemize}
+\item \verb!locomotive_request! rappresenta la condizione di richiesta di itinerario di un treno; 
+\item \verb!locomotive_arrived! rappresenta la condizione di arrivo del treno al punto di fine itinerario;
+\item \verb!locomotive_cancelled! rappresenta la condizione di \emph{abort} della richiesta di itinerario.
+\end{itemize} 
+\\
+Tutte le condizioni specificate sono state implementate mediante il meccanismo delle astrazioni sugli stati, fornito dallo strumento di modellazione \emph{UMC}.\\
+Il modello sviluppato, oltre a garantire la \emph{stabilizzazione}, soddisfa anche la importante proprietà della \emph{Safety}. Tale proprietà viene soddisfatta quando:
+\begin{itemize}
+\item non vi sono incidenti tra treni, overo essi non si trovano contemporaneamente nello stesso circuito di binario;
+\item i treni non devono trovarsi sugli scambi durante la fase di posizionamento di questi ultimi; 
+\item un treno deve arrivare sempre a destinazione.
+\end{itemize}
 
 \chapter{Simulazione}
 % casi di test trattati
+La simulazione del modello è stata eseguita tramite una richiesta di itinerario da parte di un treno.\\ Come si può notare in figura \ref{lst:itinerario}, in questa richiesta vengono esercitati tutti i possibili 15 itinerari, opportunamente concatenati di modo tale che l'ultimo nodo di ciascun itinerario intermedio coincida con il primo nodo dell'itinerario successivo.\\
+Il test effettuato mostra che, su questa complessa configurazione, la proprieta di \emph{stabilizzazione} viene soddisfatta.
+
+\begin{lstlisting}[numbers=left,
+numberstyle=\tiny,caption={Simulazione di itinerario effettuata},
+label=lst:itinerario]
+GA1 A W1 GA2 N1 W2 GA4
+GA4 F W2 GA2 P1 W1 GA1
+GA1 A W1 GA3 N2 W3 W2 GA4
+GA4 F W2 W3 GA3 P2 W1 GA1
+GA1 A W1 GA2
+GA2 P1 W1 GA1
+GA1 A W1 GA3
+GA3 P2 W1 GA1
+GA1 A W1 GA3 N2 W3 GA5
+GA5 S10 W3 GA3
+GA3 N2 W3 W2 GA4
+GA4 F W2 GA2
+GA2 N1 W2 GA4
+GA4 F W2 W3 GA3
+GA3 N2 W3 GA5
+\end{lstlisting}
 
 \chapter{Conclusioni}
 \appendix
 
 \include{UML}
 \chapter{Codice del modello}
+\include{listati}
 \end{document}
