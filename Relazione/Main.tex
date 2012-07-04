@@ -1,0 +1,83 @@
+\documentclass[10pt,a4paper,oneside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\author{Luca Baldesi, Luca Melis, Simone Macaluso}
+\title{Modellazione di un sistema di
+Interlocking Ferroviario Distribuito
+tramite UML Model Checker
+}
+
+\begin{document}
+\maketitle
+
+\chapter*{Introduzione}
+\section{asdf}
+\chapter{Interlocking ferroviario}
+%Che cos'è l'interlocking
+Tramite un sistema di \textit{interlocking ferroviario} è possibile gestire una parte di tracciato su una rete ferroviaria e quindi permettere ai treni di effettuare richieste di prenotazione dei percorsi.\\
+A differenza di un sistema centralizzato, in cui un unico centro di elaborazione si occupa di inviare i comandi ad ogni sezione del tracciato, in un sistema di \textit{interlocking ferroviario distribuito} ogni elemento della rete è in grado di eseguire in modo indipendente i propri compiti e di collaborare con i nodi adiacenti nel percorso richiesto dal treno.
+\section{Elementi del tracciato} 
+E' possibile vedere una rete ferroviaria come un grafo $G =(V,E) $ dove i vertici $V$ sono i nodi del tracciato e gli archi $E$ sono costruiti tramite una relazione di adiacenza $R \subseteq V \times V$. in cui:
+\begin{itemize}
+\item un arco $e=(v,v')$ assume che $v$ sia un adiacente sinistro di $v'$ 
+\item un arco $e=(v',v'')$ assume che $v''$ sia un adiacente destro di $v'$ 
+\end{itemize}
+Un nodo della rete puo' essere:
+\begin{itemize}
+\item \textbf{Circuito di Binario} è un tratto di binario e può avere soltanto un adiacente destro e un adiacente sinistro. Un circuito di binario può essere una stazione di fermata del treno;
+\item \textbf{Scambio} è un punto di diramazione o di confluenza. A seconda dell' orientazione fisica, uno scambio può essere \textit{normale} o \textit{rovescio}; 
+\item \textbf{Segnale} o \emph{Semaforo} rappresenta un segnale di protezione dell' unico nodo ad esso adiacente di tipo \emph{circuito di binario}.
+\end{itemize}
+Su tale grafo non esistono cicli o cappi ( nodi che hanno se stessi come adiacenti ).
+Un \emph{itinerario} sul tracciato può quindi essere visto come un percorso nel grafo della rete vincolato ad avere il primo e ultimo nodo di tipo \emph{circuito di binario}.
+\section{Funzionalità del sistema di Interlocking}
+Le funzioni fornite dal sistema di \emph{Interlocking} sono :
+\begin{itemize}
+\item prenotazioni di uno o più itinerari;
+\item cancellazione di itinerari prenotati;
+\item liberazione dell' itinerario dopo che il treno è transitato; 
+\item liberazione del tracciato all'arrivo del treno nelle stazioni terminali.
+\end{itemize} 
+\paragraph*{Prenotazione Itinerario}
+La prenotazione dell' itinerario si effettua tramite il protocollo \emph{Linear Two Phase Commit Protocolo } (2PC) in cui ogni nodo della rete facente parte dell'itinerario effettua un doppio scambio di messaggi.\\
+Ogni nodo conosce il suo successore e il suo predecessore lungo il percorso associato all'itinerario richiesto ed inoltre, il primo e l'ultimo nodo conoscono la loro posizione nel percorso.\\
+La richiesta dell'itinerario viene effettuata dal treno tramite un messaggio di ``request'' inoltrato direttamente al primo nodo (vincolato a essere un circuito di binario). Ogni nodo del percorso, se libero,  diviene ``reserved'' e propaga la \emph{request} al nodo successore fino all'ultimo nodo il quale invia a ritroso un messaggio di ``acknowledge'' che, se tutti i nodi dell'itinerario sono disponibili , sarà propagato fino al primo nodo.\\
+A seguito del messaggio di ``ack'', il primo nodo invierà un ``commit'' che percorrerà nuovamente il cammino e sarà riscontrato da un messaggio di ``agree'' emesso dall'ultimo nodo.\\
+Alla ricezione del messaggio di ``agree'' , il primo nodo comunica al treno la disponibilità dell'itinerario permettendo quindi al treno di iniziare a muoversi e di arrivare a destinazione.\\
+
+Un nodo non libero rigetta la ``request'' con un messaggio di ``negative acknowledge'' che provoca la liberazione del nodo che lo riceve e che si incarica, a sua volta, di propagarlo.
+
+\paragraph*{Cancellazione Itinerario}
+La fase relativa alla cancellazione di un itinerario è stata concepita come una versione a singola fase del 2PC, in quanto i nodi risultano già essere in stato ``reserved''.\\
+Il treno che intende cancellare un itinerario invia un messaggio di ``abort''. I nodi che ricevono tale messaggio si portano nello stato di ``aborting'' e inoltrano il messaggio al nodo successore, fino all'ultimo nodo del percorso.\\
+L'ultimo nodo del percorso diviene libero e inoltra un messaggio di ``cancel'' in senso inverso provocando la liberazione di tutti gli altri nodi dell' itinerario. Quando il messaggio di cancel raggiunge il primo nodo, l'itinerario risulta essere cancellato.
+
+\paragraph*{Liberazione Itinerario}
+Una volta che il treno è transitato su un nodo della rete, quest' ultimo viene subito liberato per permettere la prenotazione di nuovi itinerari passanti per quel nodo.\\
+\paragraph*{Liberazione tracciato}
+Nel momento in cui un treno giunge nell' ultimo nodo del suo percorso (rappresentato da un circuito di binario), si deve poter far uscire il treno stesso dal tracciato.
+In particolare, tale soluzione permette al treno di poter entrare in un altro tracciato.\\
+Per poter fare ciò, i circuiti di binario esterni possono, tramite il comando ``free'', permettere la liberazione del tracciato consentendo quindi al treno di muoversi verso l'esterno.
+
+
+
+\chapter{Modellazione del sistema}
+%come l'interlocking è stato implementato: scelte implementative
+% nostro apporto al modello
+
+\chapter{Safety e Stabilizzazione}
+%Descrizione delle proprietà da garantire
+
+\chapter{Simulazione}
+% casi di test trattati
+
+\chapter{Conclusioni}
+\appendix
+
+\include{UML}
+\chapter{Codice del modello}
+\end{document}
