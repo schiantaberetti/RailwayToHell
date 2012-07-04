@@ -5,6 +5,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\bibliographystyle{IEEEtran}
 \author{Luca Baldesi, Luca Melis, Simone Macaluso}
 \title{Modellazione di un sistema di
 Interlocking Ferroviario Distribuito
@@ -15,8 +16,15 @@ tramite UML Model Checker
 \maketitle
 
 \chapter*{Introduzione}
-\section{asdf}
+In questo elaborato ci prefiggiamo di modellare un sistema di \emph{Interlocking Ferroviario} e di testarne le proprietà di safety e di stabilizzazione. L'automa e il model checking per tali caratteristiche saranno sviluppati tramite UML Model Checker \footnote{http://fmtlab.isti.cnr.it/umc/V3.9/umc.html}, un software per lo studio accademico di model based development. Il nostro lavoro si baserà su quello preesistente descritto in \cite{Paolieri} e in \cite{RossettoRocciolo}. In particolare introdurremo nel modello i semafori come ulteriore raffinamento al sistema di interlocking e proporremo dei casi di test e delle configurazioni della rete di complessità accresciuta.
+
+Il resto del documento è composto come segue:
+Nel capitolo \ref{cap:interlocking} viene presentato il problema dell'interlocking distribuito in ambito ferroviario con la specifica di come un treno può prenotare un percorso nel nostro modello. Nel capitolo \ref{cap:modelling} viene descritto il modello da noi implementato e nel capitolo \ref{cap:properties} le proprietà che abbiamo verificato per il nostro modello.
+
+Nelle appendici \ref{cap:umc} e \ref{cap:code} vengono riportate le informazioni relative al particolare strumento di model checking che abbiamo usato e il codice relativo completo del nostro modello.
+
 \chapter{Interlocking ferroviario}
+\label{cap:interlocking}
 %Che cos'è l'interlocking
 Tramite un sistema di \textit{interlocking ferroviario} è possibile gestire una parte di tracciato su una rete ferroviaria e quindi permettere ai treni di effettuare richieste di prenotazione dei percorsi.\\
 A differenza di un sistema centralizzato, in cui un unico centro di elaborazione si occupa di inviare i comandi ad ogni sezione del tracciato, in un sistema di \textit{interlocking ferroviario distribuito} ogni elemento della rete è in grado di eseguire in modo indipendente i propri compiti e di collaborare con i nodi adiacenti nel percorso richiesto dal treno.
@@ -66,18 +74,29 @@ Per poter fare ciò, i circuiti di binario esterni possono, tramite il comando `
 
 
 \chapter{Modellazione del sistema}
+\label{cap:modelling}
 %come l'interlocking è stato implementato: scelte implementative
 % nostro apporto al modello
 
 \chapter{Safety e Stabilizzazione}
+\label{cap:properties}
 %Descrizione delle proprietà da garantire
 
 \chapter{Simulazione}
+\label{cap:simulation}
 % casi di test trattati
 
 \chapter{Conclusioni}
+\label{cap:conclusions}
+In conclusione il modello da noi sviluppato riesce a permettere la prenotazione di un itinerario da parte di uno o più treni e gestire il sistema di segnalazione (i semafori) in maniera coerente. Inoltre viene garantita l'assenza di incidenti tra più treni. 
+
+I possibili itinerari sono stati esaustivamente testati concatenandoli tra loro e usando un apposito script per la generazione automatica delle configurazione da sottoporre al model checker. Sia in \cite{Paolieri} che in \cite{RossettoRocciolo} si lamentava la mancanza di un tale tool per rendere agevole la fase di test e stesura di configurazione di una eventuale rete ferroviaria diversa.
+
 \appendix
 
 \include{UML}
 \chapter{Codice del modello}
+\label{cap:code}
+
+\bibliography{bibliography}
 \end{document}
