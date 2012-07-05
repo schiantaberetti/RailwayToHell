@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+
 \usepackage{listings}
 \usepackage{rotating}
 \bibliographystyle{IEEEtran}
@@ -12,7 +13,21 @@
 emph={obj,int,bool,State,Top,Transitions,Class,is,True,False,null,Vars,Signals},
 emphstyle=\bfseries
 }
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse
+\else
+\pdfoutput=1
+\pdftrue
+\fi
+\ifpdf
 \usepackage{graphicx}
+\usepackage{epstopdf}
+\DeclareGraphicsRule{.eps}{pdf}{.pdf}{`epstopdf #1}
+\pdfcompresslevel=9
+\else
+\usepackage{graphicx}
+\fi 
 \author{Luca Baldesi, Luca Melis, Simone Macaluso}
 \title{Modellazione di un sistema di
 Interlocking Ferroviario Distribuito
@@ -23,7 +38,8 @@ tramite UML Model Checker
 \maketitle
 \tableofcontents
 \chapter*{Introduzione}
-Lo scopo di questo elaborato è quello di modellare un sistema di \emph{interlocking ferroviario distribuito} e di testarne le proprietà di safety e di stabilizzazione. L'automa e il model checking per tali caratteristiche saranno sviluppati tramite UML Model Checker \footnote{http://fmtlab.isti.cnr.it/umc/V3.9/umc.html}, un software per lo studio accademico di model based development. Il nostro lavoro si baserà su quello preesistente descritto in \cite{Paolieri} e in \cite{RossettoRocciolo}. In particolare introdurremo nel modello i semafori come ulteriore raffinamento al sistema di interlocking e proporremo dei casi di test e delle configurazioni della rete di maggiore complessità.
+Lo scopo di questo elaborato è quello di modellare un sistema di
+\emph{interlocking ferroviario distribuito} e di testarne le proprietà di safety e di stabilizzazione. L'automa e il model checking per tali caratteristiche saranno sviluppati tramite UML Model Checker \footnote{http://fmtlab.isti.cnr.it/umc/V3.9/umc.html}, un software per lo studio accademico di model based development. Il nostro lavoro si baserà su quello preesistente descritto in \cite{Paolieri} e in \cite{RossettoRocciolo}. In particolare introdurremo nel modello i semafori come ulteriore raffinamento al sistema di interlocking e proporremo dei casi di test e delle configurazioni della rete di maggiore complessità.
 
 Il resto del documento è composto come segue:
 Nel capitolo \ref{cap:interlocking} viene presentato il problema dell'interlocking distribuito in ambito ferroviario con la specifica di come un treno possa prenotare un itinerario nel nostro modello. Nel capitolo \ref{cap:modelling} viene descritto il modello da noi implementato e nel capitolo \ref{cap:properties} le proprietà che abbiamo verificato per il nostro modello.
@@ -177,7 +193,7 @@ I possibili itinerari sono stati esaustivamente testati concatenandoli tra loro 
 \appendix
 
 \include{UML}
-\chapter{Codice del modello}
+
 
 \include{listati}
 
