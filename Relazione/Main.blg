@@ -2,7 +2,9 @@ This is BibTeX, Version 0.99d (TeX Live 2012/dev/Arch Linux)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: Main.aux
 The style file: IEEEtran.bst
+A level-1 auxiliary file: Capitolo2.aux
 A level-1 auxiliary file: UML.aux
+A level-1 auxiliary file: listati.aux
 Reallocated singl_function (elt_size=8) to 100 items from 50.
 Reallocated singl_function (elt_size=8) to 100 items from 50.
 Reallocated singl_function (elt_size=8) to 100 items from 50.
@@ -18,7 +20,7 @@ Warning--empty journal in RossettoRocciolo
 Done.
 You've used 2 entries,
             4039 wiz_defined-function locations,
-            820 strings with 7349 characters,
+            823 strings with 7536 characters,
 and the built_in function-call counts, 717 in all, are:
 = -- 45
 > -- 8

@@ -1,4 +1,81 @@
 \chapter{UML Model Checker}
 \label{cap:umc}
-\section{pippo}
-%copia spudorata
+Lo strumento UMC permette di effettuare il model checking di formule $\mu$UCTL
+a partire da:
+\begin{itemize}
+  \item un insieme di statecharts  che descrivono il comportamento dinamico delle
+classi del sistema;
+\item un diagramma degli oggetti per lo stato iniziale del sistema;
+\item una serie di “criteri” che specificano quali attributi ed eventi
+osservare.
+\end{itemize}
+
+	Una formula $\mu$UCTL è verificata “on-the-fly” , generando incrementalmente
+le e parti della macchina a stati necessarie alla verifica corrente.
+	
+	L’algoritmo di model checking impiegato è di tipo \textit{bounded} ed
+effettua successive e ricerche in profondità aumentando il limite fino a
+determinare se la formula è soddisfatta o meno. Questo, oltre a impedire l’esplosione dello spazio degli stati, permette di fornire controesempi di lunghezza ridotta nel caso di formule non soddisfatte.
+
+\section{Definizione del modello}
+
+La struttura dei modelli UMC comprende tre sezioni:
+
+\textbf{Definizioni delle classi} Definisce le classi del sistema in termini di macchine a stati
+UML. Ogni definizione di classe permette di specificare:
+
+\begin{itemize}
+	\item gli eventi asincroni (\textit{Signals}) e le chiamate sincrone
+	(\textit{Operations}) accettate dalla classe;
+	\item le variabili locali della classe (\textit{Vars});
+
+	\item la struttura di stati e sottostati della statechart (\textit{State});
+	
+	\item le transizioni, con trigger, guardia ed azioni.
+\end{itemize}
+
+\textbf{Dichiarazione degli oggetti} Una volta definite le classi ` possibile istanziarle ed
+e inizializzare gli oggetti impostandone le variabili locali. I nomi associati
+alle istanze degli oggetti costituiscono variabili globali visibili all’interno di tutte le
+definizioni di classe.
+
+\textbf{Regole di astrazione} Specificano quali eventi e propriet` del sistema osservare, e
+a
+giocano un ruolo essenziale al momento della verifica, costituendo i predicati
+atomici su cui definire formule $\mu$ UCTL.
+
+\section{Verifica di formule in logica temporale}
+UMC supporta numerose logiche temporali che comprendono tutto il $\mu$-Calcolo,
+oltre ad operatori di più alto livello simili a quelli delle logiche CTL ed
+\textit{Action-based CTL} (ACTL).
+
+In particolare, sono presenti:
+\begin{itemize}
+  \item operatore \textit{diamond} \textless  \texttt{action}\textgreater$\phi$
+  e \textit{weak diamond} \textless\textless  \texttt{action}\textgreater
+  \textgreater$\phi$;
+  \item operatore \textit{box} [action]$\phi$ e \textit{weak
+  box}[[action]]$\phi$;
+  \item operatori di massimo e minimo punto fisso (max, min);
+  \item operatori EX$\{action\}\phi$, AX$\{action\}\phi$, ET$\phi$, AT$\phi$;
+  \item operatori EF$\phi$, AF$\phi$, EG$\phi$, AG$\phi$;
+  \item operatori E[$\phi_{1}\{act1\}\cup\phi_{2}$] e
+  A[$\phi_{1}\{act1\}\cup\phi_{2}$]
+  \item operatori E[$\phi_{1}\{act1\}\cup\{act2\}\phi_{2}$] e
+  A[$\phi_{1}\{act1\}\cup\{act2\}\phi_{2}$]
+\end{itemize}
+
+I predicati atomici di \textit{state formulae} e \textit{action formulae} sono
+definiti attraverso regole di astrazione, che specificano quali condizioni e
+quali azioni osservare nel sistema, associando ad esse un nome utilizzabile
+nelle formule in logica temporale.
+Per la verifica è possibile utilizzare una versione a riga di comando di UMC
+oppure e
+l’interfaccia web disponibile all’indirizzo http://fmt.isti.cnr.it/umc [10].
+L’interfaccia web dispone di numerose funzionalità aggiuntive, fra cui la
+minimizzazione a dell’automa e la generazione di rappresentazioni grafiche.
+Per una guida all’uso si rimanda direttamente al sito.
+
+
+
+
