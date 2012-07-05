@@ -18,8 +18,7 @@ Class Train is
   State Top = READY, WAITING_OK, MOVING, ARRIVED, STOPPED, ABORTING, CANCELLED
 
   Transitions:
-    READY -> WAITING_OK { - / 
-    nodes[position].req(self, nodes[position], routes[route_pos]); }
+    READY -> WAITING_OK { - / nodes[position].req(self, nodes[position], routes[route_pos]); }
 
     WAITING_OK -> CANCELLED { wait }  
     WAITING_OK -> MOVING { start }
