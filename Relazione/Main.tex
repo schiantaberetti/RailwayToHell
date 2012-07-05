@@ -1,4 +1,5 @@
 \documentclass[10pt,a4paper,oneside]{report}
+
 \usepackage[utf8]{inputenc}
 \usepackage[italian]{babel}
 \usepackage{amsmath}
@@ -13,21 +14,21 @@
 emph={obj,int,bool,State,Top,Transitions,Class,is,True,False,null,Vars,Signals},
 emphstyle=\bfseries
 }
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-\pdffalse
-\else
-\pdfoutput=1
-\pdftrue
-\fi
-\ifpdf
-\usepackage{graphicx}
-\usepackage{epstopdf}
-\DeclareGraphicsRule{.eps}{pdf}{.pdf}{`epstopdf #1}
-\pdfcompresslevel=9
-\else
-\usepackage{graphicx}
-\fi 
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse
+%\else
+%\pdfoutput=1
+%\pdftrue
+%\fi
+%\ifpdf
+%\usepackage{graphicx}
+%\usepackage{epstopdf}
+%\DeclareGraphicsRule{.eps}{pdf}{.pdf}{`epstopdf #1}
+%\pdfcompresslevel=9
+%\else
+%\usepackage{graphicx}
+%\fi 
 \author{Luca Baldesi, Luca Melis, Simone Macaluso}
 \title{Modellazione di un sistema di
 Interlocking Ferroviario Distribuito
@@ -57,11 +58,11 @@ E' possibile vedere una rete ferroviaria come un grafo $G =(V,E) $ dove i vertic
 \item un arco $e=(v,v')$ assume che $v$ sia un adiacente sinistro di $v'$
 \item un arco $e=(v',v'')$ assume che $v''$ sia un adiacente destro di $v'$
 \end{itemize}
-Un nodo della rete puo'essere:
+Un nodo della rete può essere:
 \begin{itemize}
 \item \textbf{Circuito di Binario} è un tratto di binario e può avere soltanto un adiacente destro e un adiacente sinistro. Un circuito di binario può essere una stazione di fermata del treno e una stazione di fermata del treno può essere \emph{outer station} se è concettualmente adiacente con altri tracciati non rappresentati nel grafo della rete;
 \item \textbf{Scambio} è un punto di diramazione o di confluenza. A seconda dell'orientazione fisica, uno scambio può essere \textit{normale} o \textit{rovescio};
-\item \textbf{Segnale} o \emph{Semaforo} rappresenta un segnale adiacente a un \emph{circuito di binario} e uno \emph{Scambio}. La sua funzione è di protezione dell'unico nodo ad esso adiacente di tipo \emph{circuito di binario}.  L'introduzione di questa tipologia di nodi rompe la simmetria di percorribilità del tracciato in quanto adiacente solo negli itinerari con direzione \emph{circuito di binario}->\emph{Scambio}
+\item \textbf{Segnale} o \emph{Semaforo} rappresenta un segnale adiacente a un \emph{circuito di binario} e uno \emph{Scambio}. La sua funzione è di protezione dell'unico nodo ad esso adiacente di tipo \emph{circuito di binario}.  L'introduzione di questa tipologia di nodi rompe la simmetria di percorribilità del tracciato in quanto i nodi di questa classe sono adiacenti negli itinerari solo nella direzione \emph{circuito di binario}-\textgreater\emph{Scambio}.
 \end{itemize}
 Su tale grafo non esistono cicli o cappi (nodi che hanno se stessi come adiacenti).
 Un \emph{itinerario} sul tracciato può quindi essere visto come un percorso nel grafo della rete vincolato ad avere il primo e ultimo nodo di tipo \emph{circuito di binario}.
@@ -169,6 +170,7 @@ GA2 N1 W2 GA4
 GA4 F W2 W3 GA3
 GA3 N2 W3 GA5
 \end{lstlisting}
+
 \section{Verifica della safety}
 Si è poi testato il modello rispetto alla proprietà di \emph{Safety}. A tal fine, si è istanziato due treni concorrenti con itinerari incidenti. La simulazione e la successiva verifica della formula di safety \verb!AG (not crash )! hanno portato a esito positivo. Le rotte sottoposte ai due treni sono state:
 
