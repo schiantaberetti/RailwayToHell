@@ -58,7 +58,6 @@ booleana \textit{outer\_station} per sapere se è una stazione esterna nel
 tracciato considerato. Tutte queste varibili vanno assegnate in fase di creazione di ogni
 singolo oggetto.
 
-
 Il comportamento dinamico del \textit{TrackCircuit} è rappresentato nella figura
 \ref{fig:Circuito} dove sono evidenziati sia gli stati in cui un Circuito di Binario
 può trovarsi sia quali segnali permettono le trasizioni.
@@ -76,8 +75,8 @@ di Binario}\label{fig:Circuito}
 
 
 I segnali che possono essere elaborati dal \textit{TrackCircuit} sono:
-
-\textbf{Request} Il segnale \textit{req(sender, dest, route)} indica una
+\begin{itemize}
+\item \textbf{Request} Il segnale \textit{req(sender, dest, route)} indica una
 richiesta di prenotazione per l’itinerario route da parte dell’oggetto
 \textit{sender} (un Treno, uno Scambio oppure un altro Circuito di Binario).
 Quando viene ricevuto può essere rifiutato qualora lo stato corrente non sia
@@ -88,8 +87,7 @@ richiesta al nodo successivo dell’itinerario. Se ci troviamo sul nodo finale l
 stato diverrà \textit{WAITING\_COMMIT} e non viene propagato nessun messaggio,
 ma si risponde al mittente con un messaggio di \textit{ack}.
 
-
-\textbf{Acknowledgement} Il segnale \textit{ack(sender, dest, route)} indica un
+\item \textbf{Acknowledgement} Il segnale \textit{ack(sender, dest, route)} indica un
 riscontro positivo alla richiesta di prenotazione relativo all’itinerario route da parte
 dell’oggetto sender. Un nodo che riceve questo messaggio ha precedentemente
 propagato un messaggio di req e si trova nello stato \textit{WAITING\_ACK},
@@ -99,14 +97,14 @@ a ricevere l’\textit{ack} è il primo nodo dell’itinerario questo si porta
 direttamente nello stato \textit{WAITING\_AGREE} e spedisce un messaggio di
 \textit{commit} in avanti.
 
-\textbf{Negative Acknowledgement} Il segnale \textit{nack(sender, dest, route)}
+\item \textbf{Negative Acknowledgement} Il segnale \textit{nack(sender, dest, route)}
 rappresenta un riscontro negativo alla richiesta di prenotazione per l’itinerario route da parte
 dell’oggetto sender. Un nodo che riceve questo messaggio ha precedentemente
 propagato un messaggio req e poiché la prima fase del 2PC è fallita, propaga il
 nack al nodo precedente sull’itinerario e ritorna allo stato FREE in attesa di una
 nuova richiesta di prenotazione.
 
-\textbf{Commit} Il segnale \textit{commit(sender, dest, route)} indica un
+\item \textbf{Commit} Il segnale \textit{commit(sender, dest, route)} indica un
 commando di “conferma prenotazione” per l’itinerario route inoltrata dall’oggetto sender. Un nodo
 che riceve questo messaggio ha precedentemente propagato i messaggi req e ack
 dunque si trova in \textit{WAITING\_COMMIT} e alla sua ricezione lo propaga al
@@ -115,14 +113,14 @@ l’ultimo dell’itinerario invece che inoltrare il \textit{commit} spedisce
 indietro un messaggio \textit{agree} e si porta direttamente in
 \textit{RESERVED} in attesa che il treno vi transiti sopra.
 
-\textbf{Agree} Il segnale \textit{agree(sender, dest, route)} indica la
+\item \textbf{Agree} Il segnale \textit{agree(sender, dest, route)} indica la
 prenotazione finale per l’itinerario route da parte dell’oggetto sender. Un nodo che riceve questo messaggio
 ha precedentemente propagato i messaggi \textit{req, ack e commit} quindi alla
 ricezione dell’\textit{agree} lo propaga al nodo precedente sull’itinerario (o
 invia uno start al treno se è il primo nodo dell’itinerario) e si pone nello
 stato \textit{RESERVED}.
 
-\textbf{Disagree} Il segnale \textit{disagree(sender, dest, route)} indica il
+\item \textbf{Disagree} Il segnale \textit{disagree(sender, dest, route)} indica il
 fallimento di un \textit{commit} per l’itinerario route. Nel nostro modello solo
 uno Scambio può sollevare il fallimento del \textit{commit} quindi un Circuito
 di Binario può solo riceverlo. In tal caso, se si trova nello stato \textit{WAITING\_AGREE}, lo propaga al nodo precedente, se invece si trova nello stato \textit{RESERVED} allora lo propaga al nodo successivo. In
@@ -133,7 +131,7 @@ differenza di comportamento in base allo stato corrente è dovuta al fatto che i
 allora vuol dire che ha già fatto passare un agree ed è quindi riservato, dunque
 dovrà inoltrare il \textit{disagree} in avanti.
 
-\textbf{Abort} Il segnale \textit{aborting(sender, dest, route)} indica la
+\item \textbf{Abort} Il segnale \textit{aborting(sender, dest, route)} indica la
 richiesta di cancellazione dell’itinerario route per il quale era stata precedentemente inviata una
 richiesta di prenotazione. Il primo messaggio di questa richiesta parte sempre
 da un treno e ogni Circuito di Binario, alla ricezione di tale messaggio, inoltra
@@ -141,7 +139,7 @@ la richiesta al nodo successivo e si porta nello stato \textit{ABORTING}.
 Qual’ora il nodo sia l’ultimo dell’itinerario allora passa direttamente allo
 stato \textit{FREE} e spedisce indietro un messaggio di \textit{cancel}.
 
-\textbf{Cancel} Il segnale \textit{cancel(sender, dest, route)} indica la
+\item \textbf{Cancel} Il segnale \textit{cancel(sender, dest, route)} indica la
 conferma di cancellazione dell’itinerario route. Alla ricezione di questo messaggio un Circuito di Binario
 inoltra la richiesta al nodo precedente lungo l’itinerario e si porta nello stato
 \textit{FREE} tornando ad essere libero e in attesa di una nuova prenotazione.
@@ -150,9 +148,10 @@ oltre ad eseguire la trasizione verso lo stato \textit{FREE} spedisce il
 messaggio \textit{aborted} al treno. In questa situazione l’itinerario è stato
 reso tutto libero e il treno può e chiedere una nuova prenotazione.
 
-\textbf{Wait} Il segnale \textit{wait} viene ricevuto se sull'itinerario qualche
+\item \textbf{Wait} Il segnale \textit{wait} viene ricevuto se sull'itinerario qualche
 nodo ha avuto un fallimento. Il treno per mantenere la proprietà del
 sistema commuta il suo stato in \textit{CANCELLED}.
+\end{itemize}
 
 Gli stati in cui può trovarsi un TrackCircuit sono:
 \begin{itemize}
@@ -278,7 +277,7 @@ Il semaforo viene modellato con la classe \textit{Semaphore} rappresentata il cu
 \begin{sidewaysfigure}
 
 \centering
-\includegraphics[width=24cm]{imgs/Switch.eps}
+\includegraphics[width=24cm]{imgs/Semaphore.eps}
 
 \caption{Diagramma di variazione degli stati del Semaforo}\label{fig:semaforo}
 
