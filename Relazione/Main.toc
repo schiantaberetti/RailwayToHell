@@ -1,0 +1,19 @@
+\select@language {italian}
+\contentsline {chapter}{\numberline {1}Interlocking ferroviario}{3}
+\contentsline {section}{\numberline {1.1}Elementi del tracciato}{3}
+\contentsline {section}{\numberline {1.2}Funzionalit\IeC {\`a} del sistema di Interlocking}{4}
+\contentsline {chapter}{\numberline {2}Modellazione del sistema}{6}
+\contentsline {section}{\numberline {2.1}Tracciato e itinerari}{6}
+\contentsline {section}{\numberline {2.2}Modello del Circuito di Binario}{7}
+\contentsline {section}{\numberline {2.3}Modello dello Scambio}{10}
+\contentsline {section}{\numberline {2.4}Modello del treno}{12}
+\contentsline {section}{\numberline {2.5}Modello del Semaforo}{14}
+\contentsline {chapter}{\numberline {3}Safety e Stabilizzazione}{17}
+\contentsline {chapter}{\numberline {4}Simulazione}{18}
+\contentsline {section}{\numberline {4.1}Verifica della stabilizzazione}{18}
+\contentsline {section}{\numberline {4.2}Verifica della safety}{18}
+\contentsline {chapter}{\numberline {5}Conclusioni}{20}
+\contentsline {chapter}{\numberline {A}UML Model Checker}{21}
+\contentsline {section}{\numberline {A.1}Definizione del modello}{21}
+\contentsline {section}{\numberline {A.2}Verifica di formule in logica temporale}{22}
+\contentsline {chapter}{\numberline {B}Codice del modello}{23}

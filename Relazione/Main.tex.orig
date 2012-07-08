@@ -1,0 +1,160 @@
+\documentclass[10pt,a4paper,oneside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+
+\lstset{basicstyle=\small\ttfamily, frame=lines,
+emph={obj,int,bool,State,Top,Transitions,Class,is,True,False,null,Vars,Signals},
+emphstyle=\bfseries
+}
+\usepackage{graphicx}
+\bibliographystyle{IEEEtran}
+\author{Luca Baldesi, Luca Melis, Simone Macaluso}
+\title{Modellazione di un sistema di
+Interlocking Ferroviario Distribuito
+tramite UML Model Checker
+}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\chapter*{Introduzione}
+<<<<<<< HEAD
+In questo elaborato ci prefiggiamo di modellare un sistema di \emph{Interlocking Ferroviario} e di testarne le proprietà di safety e di stabilizzazione. L'automa e il model checking per tali caratteristiche saranno sviluppati tramite UML Model Checker \footnote{http://fmtlab.isti.cnr.it/umc/V3.9/umc.html}, un software per lo studio accademico di model based development. Il nostro lavoro si baserà su quello preesistente descritto in \cite{Paolieri} e in \cite{RossettoRocciolo}. In particolare introdurremo nel modello i semafori come ulteriore raffinamento al sistema di interlocking e proporremo dei casi di test e delle configurazioni della rete di complessità accresciuta.
+
+Il resto del documento è composto come segue:
+Nel capitolo \ref{cap:interlocking} viene presentato il problema dell'interlocking distribuito in ambito ferroviario con la specifica di come un treno può prenotare un percorso nel nostro modello. Nel capitolo \ref{cap:modelling} viene descritto il modello da noi implementato e nel capitolo \ref{cap:properties} le proprietà che abbiamo verificato per il nostro modello.
+
+Nelle appendici \ref{cap:umc} e \ref{cap:code} vengono riportate le informazioni relative al particolare strumento di model checking che abbiamo usato e il codice relativo completo del nostro modello.
+
+=======
+>>>>>>> 4a74b539e13eb17a4374869234b3303d2d33c243
+\chapter{Interlocking ferroviario}
+\label{cap:interlocking}
+%Che cos'è l'interlocking
+Tramite un sistema di \textit{interlocking ferroviario} è possibile gestire una parte di tracciato su una rete ferroviaria e quindi permettere ai treni di effettuare richieste di prenotazione dei percorsi.\\
+A differenza di un sistema centralizzato, in cui un unico centro di elaborazione si occupa di inviare i comandi ad ogni sezione del tracciato, in un sistema di \textit{interlocking ferroviario distribuito} ogni elemento della rete è in grado di eseguire in modo indipendente i propri compiti e di collaborare con i nodi adiacenti nel percorso richiesto dal treno.
+\section{Elementi del tracciato} 
+E' possibile vedere una rete ferroviaria come un grafo $G =(V,E) $ dove i vertici $V$ sono i nodi del tracciato e gli archi $E$ sono costruiti tramite una relazione di adiacenza $R \subseteq V \times V$. in cui:
+\begin{itemize}
+\item un arco $e=(v,v')$ assume che $v$ sia un adiacente sinistro di $v'$ 
+\item un arco $e=(v',v'')$ assume che $v''$ sia un adiacente destro di $v'$ 
+\end{itemize}
+Un nodo della rete puo' essere:
+\begin{itemize}
+\item \textbf{Circuito di Binario} è un tratto di binario e può avere soltanto un adiacente destro e un adiacente sinistro. Un circuito di binario può essere una stazione di fermata del treno;
+\item \textbf{Scambio} è un punto di diramazione o di confluenza. A seconda dell' orientazione fisica, uno scambio può essere \textit{normale} o \textit{rovescio}; 
+\item \textbf{Segnale} o \emph{Semaforo} rappresenta un segnale di protezione dell' unico nodo ad esso adiacente di tipo \emph{circuito di binario}.
+\end{itemize}
+Su tale grafo non esistono cicli o cappi ( nodi che hanno se stessi come adiacenti ).
+Un \emph{itinerario} sul tracciato può quindi essere visto come un percorso nel grafo della rete vincolato ad avere il primo e ultimo nodo di tipo \emph{circuito di binario}.
+\section{Funzionalità del sistema di Interlocking}
+Le funzioni fornite dal sistema di \emph{Interlocking} sono :
+\begin{itemize}
+\item prenotazioni di uno o più itinerari;
+\item cancellazione di itinerari prenotati;
+\item liberazione dell' itinerario dopo che il treno è transitato; 
+\item liberazione del tracciato all'arrivo del treno nelle stazioni terminali.
+\end{itemize} 
+\paragraph*{Prenotazione Itinerario}
+La prenotazione dell' itinerario si effettua tramite il protocollo \emph{Linear Two Phase Commit Protocolo } (2PC) in cui ogni nodo della rete facente parte dell'itinerario effettua un doppio scambio di messaggi.\\
+Ogni nodo conosce il suo successore e il suo predecessore lungo il percorso associato all'itinerario richiesto ed inoltre, il primo e l'ultimo nodo conoscono la loro posizione nel percorso.\\
+La richiesta dell'itinerario viene effettuata dal treno tramite un messaggio di ``request'' inoltrato direttamente al primo nodo (vincolato a essere un circuito di binario). Ogni nodo del percorso, se libero,  diviene ``reserved'' e propaga la \emph{request} al nodo successore fino all'ultimo nodo il quale invia a ritroso un messaggio di ``acknowledge'' che, se tutti i nodi dell'itinerario sono disponibili , sarà propagato fino al primo nodo.\\
+A seguito del messaggio di ``ack'', il primo nodo invierà un ``commit'' che percorrerà nuovamente il cammino e sarà riscontrato da un messaggio di ``agree'' emesso dall'ultimo nodo.\\
+Alla ricezione del messaggio di ``agree'' , il primo nodo comunica al treno la disponibilità dell'itinerario permettendo quindi al treno di iniziare a muoversi e di arrivare a destinazione.\\
+
+Un nodo non libero rigetta la ``request'' con un messaggio di ``negative acknowledge'' che provoca la liberazione del nodo che lo riceve e che si incarica, a sua volta, di propagarlo.
+
+\paragraph*{Cancellazione Itinerario}
+La fase relativa alla cancellazione di un itinerario è stata concepita come una versione a singola fase del 2PC, in quanto i nodi risultano già essere in stato ``reserved''.\\
+Il treno che intende cancellare un itinerario invia un messaggio di ``abort''. I nodi che ricevono tale messaggio si portano nello stato di ``aborting'' e inoltrano il messaggio al nodo successore, fino all'ultimo nodo del percorso.\\
+L'ultimo nodo del percorso diviene libero e inoltra un messaggio di ``cancel'' in senso inverso provocando la liberazione di tutti gli altri nodi dell' itinerario. Quando il messaggio di cancel raggiunge il primo nodo, l'itinerario risulta essere cancellato.
+
+\paragraph*{Liberazione Itinerario}
+Una volta che il treno è transitato su un nodo della rete, quest' ultimo viene subito liberato per permettere la prenotazione di nuovi itinerari passanti per quel nodo.\\
+\paragraph*{Liberazione tracciato}
+Nel momento in cui un treno giunge nell' ultimo nodo del suo percorso (rappresentato da un circuito di binario), si deve poter far uscire il treno stesso dal tracciato.
+In particolare, tale soluzione permette al treno di poter entrare in un altro tracciato.\\
+Per poter fare ciò, i circuiti di binario esterni possono, tramite il comando ``free'', permettere la liberazione del tracciato consentendo quindi al treno di muoversi verso l'esterno.
+
+
+
+\chapter{Modellazione del sistema}
+\label{cap:modelling}
+%come l'interlocking è stato implementato: scelte implementative
+% nostro apporto al modello
+
+\chapter{Safety e Stabilizzazione}
+\label{cap:properties}
+%Descrizione delle proprietà da garantire
+Il sistema di interlocking distribuito da noi realizzato soddisfa la proprietà della \emph{stabilizzazione}.\\
+La proprietà di \emph{stabilizzazione} può essere così enunciata:
+per ogni richiesta di itinerario compiuta da un treno posto al punto di inizio dell’itinerario, esiste una computazione che porta il treno al punto di fine dell’itinerario, e tutte le computazioni alternative (per effetto di guasti o altri motivi) producono un \emph{abort} della richiesta.\\
+\\
+In \emph{Computation Tree Logic (CTL)} questa proprietà viene descritta come:\\
+\begin{lstlisting}
+AG (locomotive_request implies AF (locomotive_arrived or locomotive_cancelled)) 
+\end{lstlisting} 
+\\
+In particolare:
+\begin{itemize}
+\item \verb!locomotive_request! rappresenta la condizione di richiesta di itinerario di un treno; 
+\item \verb!locomotive_arrived! rappresenta la condizione di arrivo del treno al punto di fine itinerario;
+\item \verb!locomotive_cancelled! rappresenta la condizione di \emph{abort} della richiesta di itinerario.
+\end{itemize} 
+\\
+Tutte le condizioni specificate sono state implementate mediante il meccanismo delle astrazioni sugli stati, fornito dallo strumento di modellazione \emph{UMC}.\\
+Il modello sviluppato, oltre a garantire la \emph{stabilizzazione}, soddisfa anche la importante proprietà della \emph{Safety}. Tale proprietà viene soddisfatta quando:
+\begin{itemize}
+\item non vi sono incidenti tra treni, overo essi non si trovano contemporaneamente nello stesso circuito di binario;
+\item i treni non devono trovarsi sugli scambi durante la fase di posizionamento di questi ultimi; 
+\item un treno deve arrivare sempre a destinazione.
+\end{itemize}
+
+\chapter{Simulazione}
+\label{cap:simulation}
+% casi di test trattati
+La simulazione del modello è stata eseguita tramite una richiesta di itinerario da parte di un treno.\\ Come si può notare in figura \ref{lst:itinerario}, in questa richiesta vengono esercitati tutti i possibili 15 itinerari, opportunamente concatenati di modo tale che l'ultimo nodo di ciascun itinerario intermedio coincida con il primo nodo dell'itinerario successivo.\\
+Il test effettuato mostra che, su questa complessa configurazione, la proprieta di \emph{stabilizzazione} viene soddisfatta.
+
+\begin{lstlisting}[numbers=left,
+numberstyle=\tiny,caption={Simulazione di itinerario effettuata},
+label=lst:itinerario]
+GA1 A W1 GA2 N1 W2 GA4
+GA4 F W2 GA2 P1 W1 GA1
+GA1 A W1 GA3 N2 W3 W2 GA4
+GA4 F W2 W3 GA3 P2 W1 GA1
+GA1 A W1 GA2
+GA2 P1 W1 GA1
+GA1 A W1 GA3
+GA3 P2 W1 GA1
+GA1 A W1 GA3 N2 W3 GA5
+GA5 S10 W3 GA3
+GA3 N2 W3 W2 GA4
+GA4 F W2 GA2
+GA2 N1 W2 GA4
+GA4 F W2 W3 GA3
+GA3 N2 W3 GA5
+\end{lstlisting}
+
+\chapter{Conclusioni}
+\label{cap:conclusions}
+In conclusione il modello da noi sviluppato riesce a permettere la prenotazione di un itinerario da parte di uno o più treni e gestire il sistema di segnalazione (i semafori) in maniera coerente. Inoltre viene garantita l'assenza di incidenti tra più treni. 
+
+I possibili itinerari sono stati esaustivamente testati concatenandoli tra loro e usando un apposito script per la generazione automatica delle configurazione da sottoporre al model checker. Sia in \cite{Paolieri} che in \cite{RossettoRocciolo} si lamentava la mancanza di un tale tool per rendere agevole la fase di test e stesura di configurazione di una eventuale rete ferroviaria diversa.
+
+\appendix
+
+\include{UML}
+\chapter{Codice del modello}
+<<<<<<< HEAD
+\label{cap:code}
+
+\bibliography{bibliography}
+=======
+\include{listati}
+>>>>>>> 4a74b539e13eb17a4374869234b3303d2d33c243
+\end{document}
