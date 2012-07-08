@@ -48,21 +48,21 @@ Class Train is
     }
 
     MOVING -> STOPPED { - [stops[stop_pos] = nodes[position] 
-    and position < nodes.length - 1] 
-    / nodes[position].train_stopped(self); }
+    	and position < nodes.length - 1] 
+    	/ nodes[position].train_stopped(self); }
     MOVING -> ARRIVED  { - [position = nodes.length - 1] 
-    / node := null; 
-    node := nodes[position].sensorOff(self, nodes[position], routes[route_pos]); }
+    	/ node := null; 
+    	node := nodes[position].sensorOff(self, nodes[position], routes[route_pos]); }
     
     STOPPED -> READY { - [position < nodes.length - 1] /
-                   stop_pos := stop_pos + 1;
-                   route_pos := route_pos + 1;
+		stop_pos := stop_pos + 1;
+        route_pos := route_pos + 1;
     }
     
     ABORTING -> READY { aborted / 
-    aborting[position] := False; }
+    	aborting[position] := False; }
     ABORTING -> MOVING { retry / 
-    aborting[position] := False; aborting[position + 1] := True; }
+    	aborting[position] := False; aborting[position + 1] := True; }
 
 end Train
 \end{lstlisting}
@@ -95,96 +95,94 @@ Class TrackCircuit is
 
   Transitions:
     FREE -> WAITING_ACK { req(sender, dest, route) [(train=null or sender=train) 
-    and next[route] /= null] /
-     next[route].req(self, next[route], route); }
+    	and next[route] /= null] /
+     	next[route].req(self, next[route], route); }
     FREE -> WAITING_COMMIT { req(sender, dest, route) [(train=null or sender=train) 
-    and next[route] = null] / 
-    prev[route].ack(self, prev[route], route); }
+    	and next[route] = null] / 
+    	prev[route].ack(self, prev[route], route); }
     FREE -> FREE { req(sender, dest, route) [train/=null and sender/=train] 
-    / sender.nack(self, sender, route); }
+    	/ sender.nack(self, sender, route); }
 
     WAITING_ACK -> WAITING_COMMIT { ack(sender, dest, route) 
-    [prev[route] /= null and train = null] / 
-    prev[route].ack(self, prev[route], route); }
+    	[prev[route] /= null and train = null] / 
+    	prev[route].ack(self, prev[route], route); }
     WAITING_ACK -> WAITING_AGREE{ ack(sender, dest, route) [train /= null] / 
-    next[route].commit(self, next[route], route); }
+    	next[route].commit(self, next[route], route); }
     WAITING_ACK -> FREE { nack(sender, dest, route_id) 
-    [(prev[route] = null) 
-    and (train /= null)] / 
-    train.wait; }
+    	[(prev[route] = null) and (train /= null)] / 
+    	train.wait; }
     WAITING_ACK -> FREE { nack(sender, dest, route_id) 
-    [prev[route] /= null] / 
-    prev[route].nack(self, prev[route], route); }
+    	[prev[route] /= null] / 
+    	prev[route].nack(self, prev[route], route); }
     WAITING_ACK -> WAITING_ACK { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_ACK -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     WAITING_COMMIT -> WAITING_AGREE{ commit(sender, dest, route) 
-    [next[route] /= null] /  next[route].commit(self, next[route], route); }
+    	[next[route] /= null] /  next[route].commit(self, next[route], route); }
     WAITING_COMMIT -> Top.RESERVED{ commit(sender, dest, route) 
-    [next[route] = null] / 
-    prev[route].agree(self, prev[route], route); }
+    	[next[route] = null] / 
+    	prev[route].agree(self, prev[route], route); }
     WAITING_COMMIT -> WAITING_COMMIT { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_COMMIT -> ABORTING { aborting(sender, dest, route) 
-    [next[route] /= null] / 
-    next[route].aborting(self, next[route], route); }
+    	[next[route] /= null] / 
+    	next[route].aborting(self, next[route], route); }
     WAITING_COMMIT -> FREE { aborting(sender, dest, route) 
-    [next[route] = null] / 
-    prev[route].cancel(self, prev[route], route); }
+    	[next[route] = null] / 
+    	prev[route].cancel(self, prev[route], route); }
 
     WAITING_AGREE -> Top.RESERVED { agree(sender, dest, route) [prev[route] /= null 
-    and train = null] / prev[route].agree(self, prev[route], route); }
+    	and train = null] / prev[route].agree(self, prev[route], route); }
     WAITING_AGREE -> Top.RESERVED { agree(sender, dest, route) [train /= null] / 
-    train.start; }
+    	train.start; }
     WAITING_AGREE -> FREE { disagree(sender, dest, route_id) 
-    [(prev[route] = null) and (train /= null)] / 
-    train.wait; }
+    	[(prev[route] = null) and (train /= null)] / 
+    	train.wait; }
     WAITING_AGREE -> FREE { disagree(sender, dest, route_id) 
-    [prev[route] /= null] / 
-    prev[route].disagree(self, prev[route], route); }
+    	[prev[route] /= null] / 
+    	prev[route].disagree(self, prev[route], route); }
     WAITING_AGREE -> WAITING_AGREE { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_AGREE -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     Top.RESERVED -> TRAIN_PASSING { sensorOn(sender,dest,route) / 
-    train := sender; }
+    	train := sender; }
     Top.RESERVED -> FREE { disagree(sender, dest, route) / 
-    if next[route] /= null then 
-    { next[route].disagree(self, next[route], route) }; }
+    	if next[route] /= null then 
+    	{ next[route].disagree(self, next[route], route) }; }
     Top.RESERVED -> FREE { sensorOff(sender,dest,route) / 
-    train := null; }
+    	train := null; }
     Top.RESERVED -> Top.RESERVED { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     Top.RESERVED -> ABORTING { aborting(sender, dest, route) 
-    [next[route] /= null] / 
-    next[route].aborting(self, next[route], route); }
+    	[next[route] /= null] / 
+    	next[route].aborting(self, next[route], route); }
     Top.RESERVED -> FREE { aborting(sender, dest, route) 
-    [next[route] = null] / 
-    prev[route].cancel(self, prev[route], route); }
+    	[next[route] = null] / 
+    	prev[route].cancel(self, prev[route], route); }
 
     TRAIN_PASSING -> FREE { sensorOff(sender,dest,route) 
-    [next[route] = null] / 
-    if(outer_station = True) { train := null; return null;} 
-    else { return self; } }
+    	[next[route] = null] / 
+    	if(outer_station = True) { train := null; return null;} 
+    	else { return self; } }
     TRAIN_PASSING -> FREE { sensorOff(sender,dest,route) 
-    [next[route] /= null] / 
-    train := null; }
+    	[next[route] /= null] / 
+    	train := null; }
     TRAIN_PASSING -> FREE { train_stopped(sender) 
-    [train = sender] }
+    	[train = sender] }
     TRAIN_PASSING -> TRAIN_PASSING { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     TRAIN_PASSING -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     ABORTING -> FREE { cancel(sender, dest, route) 
-    [train /= null] / 
-    train.aborted; }
+    	[train /= null] / train.aborted; }
     ABORTING -> FREE { cancel(sender, dest, route) 
-    [train = null and prev[route] /= null] / 
-    prev[route].cancel(self, prev[route], route); }
+    	[train = null and prev[route] /= null] / 
+    	prev[route].cancel(self, prev[route], route); }
 
 end TrackCircuit
 
@@ -214,86 +212,84 @@ Class Switch is
     train: obj := null;      
     requested_route: int;         
 
-  State Top = FREE, WAITING_ACK, WAITING_COMMIT, 
-  WAITING_AGREE, POSITIONING, RESERVED, 
-  TRAIN_PASSING, CHECK_POSITION, ABORTING
+  State Top = FREE, WAITING_ACK, WAITING_COMMIT, WAITING_AGREE, POSITIONING, RESERVED, TRAIN_PASSING, CHECK_POSITION, ABORTING
   
   State WAITING_ACK Defers req(sender: obj, dest: obj, route: int)
 
   Transitions:
     FREE -> WAITING_ACK { req(sender, dest, route) / 
-    next[route].req(self, next[route], route); }
+    	next[route].req(self, next[route], route); }
 
     WAITING_ACK -> WAITING_COMMIT { ack(sender, dest, route) / 
-    prev[route].ack(self, prev[route], route); }
+    	prev[route].ack(self, prev[route], route); }
     WAITING_ACK -> FREE { nack(sender, dest, route) / 
-    prev[route].nack(self, prev[route], route); }
+    	prev[route].nack(self, prev[route], route); }
     WAITING_ACK -> WAITING_ACK { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_ACK -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     WAITING_COMMIT -> WAITING_AGREE { commit(sender, dest, route) / 
-    				next[route].commit(self, next[route], route); }
+    	next[route].commit(self, next[route], route); }
     WAITING_COMMIT -> WAITING_COMMIT { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_COMMIT -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     WAITING_AGREE -> FREE { disagree(sender, dest, route) / 
-    prev[route].disagree(self, prev[route], route); }
+    	prev[route].disagree(self, prev[route], route); }
     WAITING_AGREE -> WAITING_AGREE { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_AGREE -> CHECK_POSITION { agree(sender, dest, route) / 
-    requested_route := route; }
+    	requested_route := route; }
     WAITING_AGREE -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     CHECK_POSITION -> Top.RESERVED { - [reversed = conf[requested_route]] / 
-    prev[requested_route].agree(self, prev[requested_route], 
-    requested_route); }
+    	prev[requested_route].agree(self, prev[requested_route], 
+    	requested_route); }
     CHECK_POSITION -> POSITIONING { - [reversed /= conf[requested_route]] }
     CHECK_POSITION -> CHECK_POSITION { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     CHECK_POSITION -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     POSITIONING -> Top.RESERVED { - / reversed := not reversed; 
-    prev[requested_route].agree(self, prev[requested_route], 
-    requested_route); }
+    	prev[requested_route].agree(self, prev[requested_route], 
+    	requested_route); }
     POSITIONING -> FREE  { - / 
-    prev[requested_route].disagree(self, prev[requested_route], 
-    requested_route); 
-    next[requested_route].disagree(self, next[requested_route], 
-    requested_route); }
+    	prev[requested_route].disagree(self, prev[requested_route], 
+    	requested_route); 
+    	next[requested_route].disagree(self, next[requested_route], 
+    	requested_route); }
     POSITIONING -> POSITIONING { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     POSITIONING -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     Top.RESERVED -> TRAIN_PASSING { sensorOn(sender,dest,route) / 
-    train := sender; }
+    	train := sender; }
     Top.RESERVED -> FREE { disagree(sender, dest, route) / 
-    next[route].disagree(self, next[route], route); }
+    	next[route].disagree(self, next[route], route); }
     Top.RESERVED -> Top.RESERVED { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     Top.RESERVED -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     TRAIN_PASSING -> FREE { sensorOff(sender,dest,route) / 
-    train := null; }
+    	train := null; }
     TRAIN_PASSING -> TRAIN_PASSING { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     TRAIN_PASSING -> TRAIN_PASSING { aborting(sender, dest, route) 
-    [train /= null and sender = train] / train.retry; }
+    	[train /= null and sender = train] / train.retry; }
 
     ABORTING -> FREE { cancel(sender, dest, route) / 
-    prev[route].cancel(self, prev[route], route); }
+    	prev[route].cancel(self, prev[route], route); }
 
 end Switch
-\end{lsrlisting}
+\end{lstlisting}
 
-\begilsstlisting}[caption={modello della classe Semaphore}]
+\begin{lstlisting}[caption={modello della classe Semaphore}]
 Class Semaphore is
 
   Signals:
@@ -317,83 +313,80 @@ Class Semaphore is
     requested_route: int;
     color_red: bool := True ;          
 
-  State Top = RED, WAITING_ACK, WAITING_COMMIT, WAITING_AGREE, 
-  COMMANDED_RED, COMMANDED_GREEN, TRAIN_PASSING, GREEN, ABORTING, FAILED
+  State Top = RED, WAITING_ACK, WAITING_COMMIT, WAITING_AGREE, COMMANDED_RED, COMMANDED_GREEN, TRAIN_PASSING, GREEN, ABORTING, FAILED
   
   State WAITING_ACK Defers req(sender: obj, dest: obj, route: int)
 
   Transitions:
     RED -> WAITING_ACK { req(sender, dest, route) / 
-    next[route].req(self, next[route], route); }
+    	next[route].req(self, next[route], route); }
 
     WAITING_ACK -> WAITING_COMMIT { ack(sender, dest, route) / 
-    prev[route].ack(self, prev[route], route); }
+    	prev[route].ack(self, prev[route], route); }
     WAITING_ACK -> RED { nack(sender, dest, route) / 
-    prev[route].nack(self, prev[route], route); }
+   		prev[route].nack(self, prev[route], route); }
     WAITING_ACK -> WAITING_ACK { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_ACK -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     WAITING_COMMIT -> WAITING_AGREE { commit(sender, dest, route) / 
-    next[route].commit(self, next[route], route); }
+    	next[route].commit(self, next[route], route); }
     WAITING_COMMIT -> WAITING_COMMIT { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_COMMIT -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     WAITING_AGREE -> RED { disagree(sender, dest, route) / 
-    prev[route].disagree(self, prev[route], route); }
+    	prev[route].disagree(self, prev[route], route); }
     WAITING_AGREE -> WAITING_AGREE { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     WAITING_AGREE -> COMMANDED_GREEN { agree(sender, dest, route) / 
-    requested_route := route; }
+    	requested_route := route; }
     WAITING_AGREE -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     COMMANDED_GREEN -> Top.GREEN { - / 
-    prev[requested_route].agree(self, 
-    prev[requested_route], requested_route); 
-    color_red := False; }
+    	prev[requested_route].agree(self, 
+    	prev[requested_route], requested_route); 
+    	color_red := False; }
     COMMANDED_GREEN -> RED  { - / 
-    prev[requested_route].disagree(self, 
-    prev[requested_route], requested_route); 
-    next[requested_route].disagree(self, 
-    next[requested_route], requested_route); }
-    
+    	prev[requested_route].disagree(self, 
+    	prev[requested_route], requested_route); 
+    	next[requested_route].disagree(self, 
+    	next[requested_route], requested_route); }
     COMMANDED_GREEN -> COMMANDED_GREEN { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
-    
+    	sender.nack(self, sender, route); }
     COMMANDED_GREEN -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     Top.GREEN -> TRAIN_PASSING { sensorOn(sender,dest,route) / 
-    train := sender; }
+    	train := sender; }
     Top.GREEN -> Top.GREEN { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     Top.GREEN -> ABORTING { aborting(sender, dest, route) / 
-    next[route].aborting(self, next[route], route); }
+    	next[route].aborting(self, next[route], route); }
 
     TRAIN_PASSING -> COMMANDED_RED { sensorOff(sender,dest,route) / 
-    train := null; }
+    	train := null; }
     TRAIN_PASSING -> TRAIN_PASSING { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     TRAIN_PASSING -> TRAIN_PASSING { aborting(sender, dest, route) 
-    [train /= null and sender = train] / train.retry; }
+    	[train /= null and sender = train] / train.retry; }
  
     COMMANDED_RED -> COMMANDED_RED { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     COMMANDED_RED -> FAILED
     COMMANDED_RED -> RED {- / 
-    color_red := True;}
+    	color_red := True;}
     
     FAILED -> FAILED { req(sender, dest, route) / 
-    sender.nack(self, sender, route); }
+    	sender.nack(self, sender, route); }
     FAILED -> RED {- / 
-    color_red := True;}
+    	color_red := True;}
 
     ABORTING -> RED { cancel(sender, dest, route) / 
-    prev[route].cancel(self, prev[route], route); }
+    	prev[route].cancel(self, prev[route], route); }
 
 end Semaphore
 \end{lstlisting}
@@ -402,38 +395,35 @@ end Semaphore
 Objects
 
 GA1: TrackCircuit (
- train => null, 
-    outer_station => True,
+ train => locomotive, 
+ outer_station => True,
  prev => [null,null,null,null,null,null,W1,null,W1,null,W1,null,W1,null,null],
- next => [A,A,A,A,A,null,null,null,null,null,null,null,null,null,
- null]);
+ next => [A,A,A,A,A,null,null,null,null,null,null,null,null,null,null]);
+
 A: Semaphore (
-    train => null,
- prev => [GA1,GA1,GA1,GA1,GA1,null,null,null,null,null,null,null,
- null,null,null],
- next => [W1,W1,W1,W1,W1,null,null,null,null,null,null,null,null,
- null,null]);
+ train => null,
+ prev => [GA1,GA1,GA1,GA1,GA1,null,null,null,null,null,null,null,null,null,null],
+ next => [W1,W1,W1,W1,W1,null,null,null,null,null,null,null,null,null,null]);
+
 W1: Switch (
- conf => [False, False, False, False, False, False, False, False, 
- False, False, False, False, False, True, True],
-    train => null,
- prev => [A,A,A,A,A,null,P1,null,P2,null,P1,null,
- P2,null,null],
- next => [GA2,GA2,GA3,GA3,GA3,null,GA1,null,GA1,null,
- GA1,null,GA1,null,null]);
+ conf => [False, False, False, False, False, False, False, False, False, False, False, False, False, True, True],
+ train => null,
+ prev => [A,A,A,A,A,null,P1,null,P2,null,P1,null,P2,null,null],
+ next => [GA2,GA2,GA3,GA3,GA3,null,GA1,null,GA1,null,GA1,null,GA1,null,null]);
+ 
 GA2: TrackCircuit (
  train => null, 
-    outer_station => False,
- prev => [W1,W1,null,null,null,W2,W2,null,null,null,null,null,
- null,null,null],
- next => [null,N1,null,null,null,null,P1,null,null,null,P1,N1,
- null,null,null]);
+ outer_station => False,
+ prev => [W1,W1,null,null,null,W2,W2,null,null,null,null,null,null,null,null],
+ next => [null,N1,null,null,null,null,P1,null,null,null,P1,N1, null,null,null]);
+ 
 N1: Semaphore (
-    train => null,
+ train => null,
  prev => [null,GA2,null,null,null,null,null,null,null,null,null,
  GA2,null,null,null],
  next => [null,W2,null,null,null,null,null,null,null,null,null,
  W2,null,null,null]);
+ 
 W2: Switch (
  conf => [False, False, False, False, False, False, False, False, 
  False, False, False, 
@@ -441,87 +431,72 @@ W2: Switch (
  prev => [null,N1,null,W3,null,F,F,F,F,null,null,N1,null,W3,null],
  next => [null,GA4,null,GA4,null,GA2,GA2,W3,W3,null,null,GA4,null,
  GA4,null]);
+
 GA4: TrackCircuit (
  train => null, 
-    outer_station => True,
+ outer_station => True,
  prev => [null,W2,null,W2,null,null,null,null,null,null,null,W2,
  null,W2,null],
  next => [null,null,null,null,null,F,F,F,F,null,null,null,null,
  null,null]);
+
 GA3: TrackCircuit (
- train => locomotive, 
-    outer_station => False,
+ train => null, 
+ outer_station => False,
  prev => [null,null,W1,W1,W1,null,null,W3,W3,W3,null,null,null,
  null,null],
  next => [null,null,null,N2,N2,null,null,null,P2,null,null,null,
  P2,N2,N2]);
+
 N2: Semaphore (
-    train => null,
+ train => null,
  prev => [null,null,null,GA3,GA3,null,null,null,null,null,null,
  null,null,GA3,GA3],
  next => [null,null,null,W3,W3,null,null,null,null,null,null,
  null,null,W3,W3]);
+
 W3: Switch (
- conf => [False, False, False, False, False, False, False, 
- False, False, False, False, 
- False, False, True, True],
- prev => [null,null,null,N2,N2,null,null,W2,W2,S10,null,
- snull,null,N2,N2],
- next => [null,null,null,W2,GA5,null,null,GA3,GA3,GA3,null,
- null,null,W2,GA5]);
+ conf => [False, False, False, False, False, False, False,False, False, False, False,False, False, True, True],
+ prev => [null,null,null,N2,N2,null,null,W2,W2,S10,null,null,null,N2,N2],
+ next => [null,null,null,W2,GA5,null,null,GA3,GA3,GA3,null,null,null,W2,GA5]);
+
 GA5: TrackCircuit (
  train => null, 
-    outer_station => False,
- prev => [null,null,null,null,W3,null,null,null,null,null,null,null,
- null,null,W3],
- next => [null,null,null,null,null,null,null,null,null,S10,null,null,
- null,null,null]);
+ outer_station => False,
+ prev => [null,null,null,null,W3,null,null,null,null,null,null,null,null,null,W3],
+ next => [null,null,null,null,null,null,null,null,null,S10,null,null,null,null,null]);
+
 F: Semaphore (
-    train => null,
- prev => [null,null,null,null,null,GA4,GA4,GA4,GA4,null,null,null,null,
- null,null],
+ train => null,
+ prev => [null,null,null,null,null,GA4,GA4,GA4,GA4,null,null,null,null,null,null],
  next => [null,null,null,null,null,W2,W2,W2,W2,null,null,null,null,null,null]);
+
 P1: Semaphore (
-    train => null,
- prev => [null,null,null,null,null,null,GA2,null,null,null,GA2,null,null,
- null,null],
+ train => null,
+ prev => [null,null,null,null,null,null,GA2,null,null,null,GA2,null,null,null,null],
  next => [null,null,null,null,null,null,W1,null,null,null,W1,null,null,null,null]);
+
 P2: Semaphore (
-    train => null,
- prev => [null,null,null,null,null,null,null,null,GA3,null,null,null,GA3,
- null,null],
- next => [null,null,null,null,null,null,null,null,W1,null,null,null,W1,
- null,null]);
+ train => null,
+ prev => [null,null,null,null,null,null,null,null,GA3,null,null,null,GA3,null,null],
+ next => [null,null,null,null,null,null,null,null,W1,null,null,null,W1,null,null]);
+
 S10: Semaphore (
-    train => null,
- prev => [null,null,null,null,null,null,null,null,null,GA5,null,null,null,
- null,null],
- next => [null,null,null,null,null,null,null,null,null,W3,null,null,null,
- null,null]);
+ train => null,
+ prev => [null,null,null,null,null,null,null,null,null,GA5,null,null,null,null,null],
+ next => [null,null,null,null,null,null,null,null,null,W3,null,null,null,null,null]);
  
- locomotive: Train (
+locomotive: Train (
  	routes => [ 1,6,3,8,0,10,2,12,4,9,13,5,11,7,14],
- 	nodes => [ GA1,A,W1,GA2,N1,W2,GA4,F,W2,GA2,P1,W1,GA1,A,W1,GA3,N2,W3,W2,
- 	GA4,F,W2,W3,
- 	GA3,P2,W1,GA1,A,W1,GA2,P1,W1,GA1,A,W1,GA3,P2,W1,GA1,A,W1,GA3,N2,W3,GA5,
- 	S10,W3,GA3,
- 	N2,W3,W2,GA4,F,W2,GA2,
- 	N1,W2,GA4,F,W2,W3,GA3,N2,W3,GA5],
- 	aborting => [False,False,False,False,False,False,False,False,False,False,
- 	False,False,False,False,False,False,False,False,False,False,False,False,
- 	False,False,False,False,False,False,False,False,False,False,False,False,
- 	False,False,False,False,False,False,False,False,False,False,False,False,
- 	False,False,False,False,False,False,False,False,
- 	False,False,False,False,False,False,False,False,
- 	False,False,False],
- 	stops => [GA4,GA1,GA4,GA1,GA2,GA1,GA3,GA1,GA5,GA3,GA4,GA2,
- 	GA4,GA3,GA5],
+ 	nodes => [ GA1,A,W1,GA2,N1,W2,GA4,F,W2,GA2,P1,W1,GA1,A,W1,GA3,N2,W3,W2,GA4,F,W2,W3,GA3,P2,W1,GA1,A,W1,GA2,P1,W1,GA1,A,W1,GA3,P2,W1,GA1,A,W1,GA3,N2,W3,GA5,S10,W3,GA3,N2,W3,W2,GA4,F,W2,GA2,N1,W2,GA4,F,W2,W3,GA3,N2,W3,GA5],
+ 	aborting => [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False],
+ 	stops => [GA4,GA1,GA4,GA1,GA2,GA1,GA3,GA1,GA5,GA3,GA4,GA2,GA4,GA3,GA5],
  	node => GA1
  );
  
 \end{lstlisting}
 
-\begin{lstlisting}[caption={Astrazioni per la verifica delle proprieta'}]
+\begin{lstlisting}[caption={Astrazioni per la verifica della proprietà di stabilizzazione}]
 Abstractions {
   Action $1($*) -> $1($*)
     
