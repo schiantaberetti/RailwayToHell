@@ -260,7 +260,7 @@ Nella fase iniziale, il treno cicla fra gli stati \textit{READY} ed
 start) alla richiesta di prenotazione del primo itinerario. Se la prenotazione
 non è andata a buon fine, ossia un nodo risulta già prenotato da un altro treno,
 il messaggio di ritorno sarà un \textit{wait} e quindi il treno si riporta nello
-stato \textit{READY} in attesa di tentare una nuova prenotazione.
+stato \textit{CANCELLED} e, successivamente, nello stato \textit{READY} in attesa di tentare una nuova prenotazione.
 Durante il movimento il treno si sposta da un nodo al successivo inviando messaggi
 di sensorOn al nodo su cui entra e sensorOff al nodo dal quale esce. La chiamata
 a \textit{sensorOff} di fatto riporta il nodo di uscita nello stato
