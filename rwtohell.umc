@@ -261,7 +261,7 @@ end Semaphore
 Objects
 
 GA1: TrackCircuit (
- train => null, 
+ train => locomotive, 
     outer_station => True,
  prev => [null,null,null,null,null,null,W1,null,W1,null,W1,null,W1,null,null],
  next => [A,A,A,A,A,null,null,null,null,null,null,null,null,null,null]);
@@ -293,7 +293,7 @@ GA4: TrackCircuit (
  prev => [null,W2,null,W2,null,null,null,null,null,null,null,W2,null,W2,null],
  next => [null,null,null,null,null,F,F,F,F,null,null,null,null,null,null]);
 GA3: TrackCircuit (
- train => locomotive, 
+ train => null, 
     outer_station => False,
  prev => [null,null,W1,W1,W1,null,null,W3,W3,W3,null,null,null,null,null],
  next => [null,null,null,N2,N2,null,null,null,P2,null,null,null,P2,N2,N2]);
@@ -329,12 +329,13 @@ S10: Semaphore (
 
 
 locomotive: Train (
-	routes => [ 14],
-	nodes => [ GA3,N2,W3,GA5],
-	aborting => [False,False,False,False],
-	stops => [GA5],
-	node => GA3
+	routes => [ 1,6,3,8,0,10,2,12,4,9,13,5,11,7,14],
+	nodes => [ GA1,A,W1,GA2,N1,W2,GA4,F,W2,GA2,P1,W1,GA1,A,W1,GA3,N2,W3,W2,GA4,F,W2,W3,GA3,P2,W1,GA1,A,W1,GA2,P1,W1,GA1,A,W1,GA3,P2,W1,GA1,A,W1,GA3,N2,W3,GA5,S10,W3,GA3,N2,W3,W2,GA4,F,W2,GA2,N1,W2,GA4,F,W2,W3,GA3,N2,W3,GA5],
+	aborting => [False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False],
+	stops => [GA4,GA1,GA4,GA1,GA2,GA1,GA3,GA1,GA5,GA3,GA4,GA2,GA4,GA3,GA5],
+	node => GA1
 );
+
 
 
 Abstractions {
@@ -342,44 +343,15 @@ Abstractions {
 
   State inState(locomotive.ARRIVED) -> locomotive_arrived
 
-  State inState(locomotive.STOPPED) -> locomotive_stopped
-
   State inState(locomotive.CANCELLED) -> locomotive_cancelled
 
-  State inState(locomotive.ABORTING) -> locomotive_aborting
-
-  State inState(locomotive.MOVING) -> locomotive_moving
 
   State inState(locomotive.WAITING_OK) -> locomotive_request
-/*
-  State meucci.node = marconi.node and meucci.node /= null -> crash
-  
-  State meucci.node = firenze -> meucci_in_firenze
-  State meucci.node = prato -> meucci_in_prato
-  State meucci.node = bologna -> meucci_in_bologna
-  State meucci.node = porretta -> meucci_in_porretta
-  
-  State marconi.node = porretta -> marconi_in_porretta
-  State marconi.node = firenze -> marconi_in_firenze
-  State marconi.node = prato -> marconi_in_prato
-  State marconi.node = bologna -> marconi_in_bologna
-
-  State inState(switchFi2.POSITIONING) -> switchFi2_positioning
-  State inState(switchBo2.POSITIONING) -> switchBo2_positioning
-  State meucci.node = switchFi2 -> meucci_on_switchFi2
-  State meucci.node = switchBo2 -> meucci_on_switchBo2
-  State marconi.node = switchFi2 -> marconi_on_switchFi2
-  State marconi.node = switchBo2 -> marconi_on_switchBo2
-*/
 }
 
 /* --------- formule -----------------
  *
  * AG not crash
- *
- * AG ((switchBo2_positioning implies not (marconi_on_switchBo2 or meucci_on_switchBo2)) and (switchFi2_positioning implies not (marconi_on_switchFi2 or meucci_on_switchFi2)))
- *
- * EF AG (marconi_arrived and meucci_arrived)
  *
   AG (locomotive_request implies AF (locomotive_arrived or locomotive_cancelled)) 
  */
