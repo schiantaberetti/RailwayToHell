@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2012/dev/Arch Linux) (format=pdflatex 2012.5.28)  5 JUL 2012 17:33
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2012/dev/Arch Linux) (format=pdflatex 2012.5.28)  10 JUL 2012 12:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -546,59 +546,67 @@ Overfull \hbox (39.1122pt too wide) in paragraph at lines 27--28
 File: imgs/TrackCircuit.pdf Graphic file (type pdf)
 
 <use imgs/TrackCircuit.pdf>
-Package pdftex.def Info: imgs/TrackCircuit.pdf used on input line 69.
+Package pdftex.def Info: imgs/TrackCircuit.pdf used on input line 68.
 (pdftex.def)             Requested size: 682.86613pt x 392.12135pt.
 
-Overfull \hbox (84.86613pt too wide) in paragraph at lines 69--70
+Overfull \hbox (84.86613pt too wide) in paragraph at lines 68--69
  [][] 
+ []
+
+
+Overfull \hbox (25.61427pt too wide) in paragraph at lines 90--99
+\OT1/cmr/m/n/10 ne in at-te-sa del \OT1/cmr/m/it/10 com-mit \OT1/cmr/m/n/10 ese
+-guen-do la tran-si-zio-ne al-lo sta-to \OT1/cmr/m/it/10 WAI-TING[]COMMIT\OT1/c
+mr/m/n/10 .
  []
 
 [7] [8 <./imgs/TrackCircuit.pdf>] [9]
-File: imgs/TrackCircuit.pdf Graphic file (type pdf)
- <use imgs/TrackCircuit.pdf>
-Package pdftex.def Info: imgs/TrackCircuit.pdf used on input line 185.
-(pdftex.def)             Requested size: 682.86613pt x 392.12135pt.
+<imgs/Switch.pdf, id=55, 1941.2525pt x 918.43124pt>
+File: imgs/Switch.pdf Graphic file (type pdf)
+ <use imgs/Switch.pdf>
+Package pdftex.def Info: imgs/Switch.pdf used on input line 184.
+(pdftex.def)             Requested size: 682.86613pt x 323.08139pt.
 
-Overfull \hbox (84.86613pt too wide) in paragraph at lines 185--186
+Overfull \hbox (84.86613pt too wide) in paragraph at lines 184--185
  [][] 
  []
 
-[10] [11] <imgs/Train.pdf, id=61, 1208.515pt x 620.3175pt>
+[10] [11 <./imgs/Switch.pdf>] <imgs/Train.pdf, id=67, 1208.515pt x 620.3175pt>
 File: imgs/Train.pdf Graphic file (type pdf)
 
 <use imgs/Train.pdf>
-Package pdftex.def Info: imgs/Train.pdf used on input line 233.
+Package pdftex.def Info: imgs/Train.pdf used on input line 232.
 (pdftex.def)             Requested size: 682.86613pt x 350.50844pt.
 
-Overfull \hbox (84.86613pt too wide) in paragraph at lines 233--234
+Overfull \hbox (84.86613pt too wide) in paragraph at lines 232--233
  [][] 
  []
 
 [12] [13 <./imgs/Train.pdf>]
-Package epstopdf Info: Source file: <imgs/Switch.eps>
-(epstopdf)                    date: 2012-07-05 15:06:40
-(epstopdf)                    size: 30103 bytes
-(epstopdf)             Output file: <imgs/Switch-eps-converted-to.pdf>
-(epstopdf)                    date: 2012-07-05 15:20:20
-(epstopdf)                    size: 10955 bytes
-(epstopdf)             Command: <repstopdf --outfile=imgs/Switch-eps-converted-
-to.pdf imgs/Switch.eps>
-(epstopdf)             \includegraphics on input line 281.
+Package epstopdf Info: Source file: <imgs/Semaphore.eps>
+(epstopdf)                    date: 2012-07-05 15:04:44
+(epstopdf)                    size: 29662 bytes
+(epstopdf)             Output file: <imgs/Semaphore-eps-converted-to.pdf>
+(epstopdf)                    date: 2012-07-10 12:47:42
+(epstopdf)                    size: 9980 bytes
+(epstopdf)             Command: <repstopdf --outfile=imgs/Semaphore-eps-convert
+ed-to.pdf imgs/Semaphore.eps>
+(epstopdf)             \includegraphics on input line 280.
 Package epstopdf Info: Output file is already uptodate.
 
-<imgs/Switch-eps-converted-to.pdf, id=74, 1941.2525pt x 918.43124pt>
-File: imgs/Switch-eps-converted-to.pdf Graphic file (type pdf)
+<imgs/Semaphore-eps-converted-to.pdf, id=80, 1935.23pt x 1000.73875pt>
+File: imgs/Semaphore-eps-converted-to.pdf Graphic file (type pdf)
 
-<use imgs/Switch-eps-converted-to.pdf>
-Package pdftex.def Info: imgs/Switch-eps-converted-to.pdf used on input line 28
-1.
-(pdftex.def)             Requested size: 682.86613pt x 323.08139pt.
+<use imgs/Semaphore-eps-converted-to.pdf>
+Package pdftex.def Info: imgs/Semaphore-eps-converted-to.pdf used on input line
+ 280.
+(pdftex.def)             Requested size: 682.86613pt x 353.11931pt.
 
-Overfull \hbox (84.86613pt too wide) in paragraph at lines 281--282
+Overfull \hbox (84.86613pt too wide) in paragraph at lines 280--281
  [][] 
  []
 
-[14] [15 <./imgs/Switch-eps-converted-to.pdf>]) [16]
+[14] [15 <./imgs/Semaphore-eps-converted-to.pdf>]) [16]
 Capitolo 3.
 [17
 
@@ -631,7 +639,7 @@ LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <9> not available
 
 
 ] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34]) [35] (./Main.bbl
-Underfull \hbox (badness 1005) in paragraph at lines 29--31
+Underfull \hbox (badness 1005) in paragraph at lines 29--30
 []\OT1/cmr/m/n/10 G. R. Si-mo-ne Ros-set-to, ``Mo-del-la-zio-ne di un si-ste-ma
  di in-ter-loc-king
  []
@@ -641,13 +649,13 @@ Underfull \hbox (badness 1005) in paragraph at lines 29--31
 
 ] (./Main.aux (./Capitolo2.aux) (./UML.aux) (./listati.aux)) ) 
 Here is how much of TeX's memory you used:
- 4977 strings out of 493629
- 63939 string characters out of 3148778
- 300881 words of memory out of 3000000
- 8162 multiletter control sequences out of 15000+200000
+ 4975 strings out of 493629
+ 63953 string characters out of 3148778
+ 296881 words of memory out of 3000000
+ 8159 multiletter control sequences out of 15000+200000
  13388 words of font info for 52 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
- 38i,9n,32p,659b,1630s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 38i,9n,32p,659b,1626s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/ty
 pe1/public/amsfonts/cm/cmbx12.pfb></usr/share/texmf-dist/fonts/type1/public/ams
@@ -661,10 +669,10 @@ e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmti10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmtt10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb>
-Output written on Main.pdf (37 pages, 284280 bytes).
+Output written on Main.pdf (37 pages, 290920 bytes).
 PDF statistics:
- 207 PDF objects out of 1000 (max. 8388607)
- 143 compressed objects within 2 object streams
+ 213 PDF objects out of 1000 (max. 8388607)
+ 147 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
